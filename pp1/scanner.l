@@ -18,6 +18,9 @@
 
 #include <sstream>
 #include <iostream>
+#include <cstdlib>
+
+#define tabspaces 7
 
 /* Global variable: yylval
  * -----------------------
@@ -84,6 +87,14 @@ double strToDbl(char * in) {
 	return toReturn;
 }
 
+long int convertInt(char * in, int base) {
+	return strtol(in, 0, base);
+}
+
+double convertFloat(char * in) {
+	return atof(in);
+}
+
 %}
 
 
@@ -144,9 +155,10 @@ not_end			{star}[^*/\n]
 identifier		{letter}({letter}|{digit}|{underscore}){0,30}
 long_id			{letter}({letter}|{digit}|{underscore}){31,}
 
-whitespace		({space}|{tab})
+whitespace		({space})
+tabspace		({tab})
 boolean_constant	({b_true}|{b_false})
-integer_constant	{digit}+
+integer_constant	({digit}+)
 double_constant		({digit})+{dot}({digit})*{sci}?
 half_string		{quote}({string_char}*)
 string_constant		{half_string}{quote}
@@ -207,8 +219,8 @@ NewArray		{return(T_NewArray);}
 
 {boolean_constant}	{yylval.boolConstant=yytext[0]=='t'?true:false; return(T_BoolConstant);}
 
-{hex_int}		{yylval.integerConstant=hexToInt(yytext); return(T_IntConstant);}
-{integer_constant}	{yylval.integerConstant=intToInt(yytext); return(T_IntConstant);}
+{hex_int}		{yylval.integerConstant=convertInt(yytext, 16); return(T_IntConstant);}
+{integer_constant}	{yylval.integerConstant=convertInt(yytext, 10); return(T_IntConstant);}
 {double_constant}	{yylval.doubleConstant=strToDbl(yytext); return(T_DoubleConstant);}
 {string_constant}	{yylval.stringConstant=yytext; return(T_StringConstant);}
 {half_string}		{ReportError::UntermString(&yylloc, yytext);}
@@ -218,11 +230,17 @@ NewArray		{return(T_NewArray);}
 
 
 {whitespace}		{}
+{tabspace}		{yycolumn += tabspaces;}
 {newline}		{yycolumn = 1; yylineno++;}
 .			{ReportError::UnrecogChar(&yylloc, yytext[0]);}
 %%
 
 /* removed rules
+
+{hex_int}		{yylval.integerConstant=hexToInt(yytext); return(T_IntConstant);}
+{integer_constant}	{yylval.integerConstant=intToInt(yytext); return(T_IntConstant);}
+{double_constant}	{yylval.doubleConstant=strToDbl(yytext); return(T_DoubleConstant);}
+
 {single}.*		{}
 
 {multi_start}		{BEGIN(MULTI);}

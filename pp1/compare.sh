@@ -1,6 +1,7 @@
 #!/bin/bash
 
-make
+make -s clean
+make -s
 
 mkdir tocompare
 cp samples/*.frag tocompare/
@@ -8,7 +9,7 @@ cp samples/*.decaf tocompare/
 
 cd tocompare
 ln -s ../dcc ./dcc
-ln -s ../solution/dpp ./dpp
+ln -s ../dpp ./dpp
 
 cd ../tocompare
 
@@ -38,3 +39,4 @@ done
 cd ../
 
 rm -rf tocompare
+make -s clean

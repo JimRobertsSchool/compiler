@@ -1,0 +1,29 @@
+void
+	Void
+  VOid
+int
+double 
+bool	
+STRING
+string
+class
+interface
+nUll
+null
+this
+extends
+implements
+for
+while
+if
+else
+return
+break
+New
+NewArray
+Print
+print
+readinteger
+ReadInteger
+ReadLine
+readline
