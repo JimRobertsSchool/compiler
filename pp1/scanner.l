@@ -86,7 +86,6 @@ double strToDbl(char * in) {
 
 %}
 
-%option yylineno
 
  /* The section before the first %% is the Definitions section of the lex
   * input file. Here is where you set options for the scanner, define lex
@@ -104,11 +103,12 @@ newline			[\n]
 b_true			true
 b_false			false
 dot			[\.]
-quote			["]
+quote			[\"]
 string_char		[^\n\"]
 
 hex_int			0[xX][0-9a-fA-F]+
 oct_int			0[0-7]+
+sci			[eE]({plus}|{minus})?{digit}+
 
 plus			[+]
 minus			[\-]
@@ -142,11 +142,14 @@ not_star		[^*\n]
 not_end			{star}[^*/\n]
 
 identifier		{letter}({letter}|{digit}|{underscore}){0,30}
+long_id			{letter}({letter}|{digit}|{underscore}){31,}
+
 whitespace		({space}|{tab})
 boolean_constant	({b_true}|{b_false})
 integer_constant	{digit}+
-double_constant		({digit})+{dot}({digit})*
-string_constant		{quote}({string_char}*){quote}
+double_constant		({digit})+{dot}({digit})*{sci}?
+half_string		{quote}({string_char}*)
+string_constant		{half_string}{quote}
 
 
 %x MULTI
@@ -202,16 +205,24 @@ NewArray		{return(T_NewArray);}
 {l_brace}		{return('{');}
 {r_brace}		{return('}');}
 
-{boolean_constant}	{return(T_BoolConstant);}
+{boolean_constant}	{yylval.boolConstant=yytext[0]=='t'?true:false; return(T_BoolConstant);}
 
 {hex_int}		{yylval.integerConstant=hexToInt(yytext); return(T_IntConstant);}
-{oct_int}		{yylval.integerConstant=octToInt(yytext); return(T_IntConstant);}
 {integer_constant}	{yylval.integerConstant=intToInt(yytext); return(T_IntConstant);}
 {double_constant}	{yylval.doubleConstant=strToDbl(yytext); return(T_DoubleConstant);}
 {string_constant}	{yylval.stringConstant=yytext; return(T_StringConstant);}
+{half_string}		{ReportError::UntermString(&yylloc, yytext);}
 
+{long_id}		{ReportError::LongIdentifier(&yylloc, yytext); return(T_Identifier);}
 {identifier}		{return(T_Identifier);}
 
+
+{whitespace}		{}
+{newline}		{yycolumn = 1; yylineno++;}
+.			{ReportError::UnrecogChar(&yylloc, yytext[0]);}
+%%
+
+/* removed rules
 {single}.*		{}
 
 {multi_start}		{BEGIN(MULTI);}
@@ -219,10 +230,10 @@ NewArray		{return(T_NewArray);}
 <MULTI>{not_end}	{}
 <MULTI>{newline}	{yylineno++;}
 <MULTI>{multi_end}	{BEGIN(INITIAL);}
+<MULTI><<EOF>>		{ReportError::UntermComment();}
 
-{whitespace}		{}
-{newline}		{yycolumn = 1; yylineno++;}
-%%
+*/
+
 /* The closing %% above marks the end of the Rules section and the beginning
  * of the User Subroutines section. All text from here to the end of the
  * file is copied verbatim to the end of the generated lex.yy.c file.
