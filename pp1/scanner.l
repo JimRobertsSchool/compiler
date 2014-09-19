@@ -16,6 +16,9 @@
 #include "utility.h" // for PrintDebug()
 #include "errors.h"
 
+#include <sstream>
+#include <iostream>
+
 /* Global variable: yylval
  * -----------------------
  * This global variable is how we get attribute information about the token
@@ -33,6 +36,8 @@ YYSTYPE yylval;  // manually declared for pp1, later Yacc provides
  */
 struct yyltype yylloc; // manually dclared for pp1, later Yacc provides
 
+int yycolumn = 1;
+
 /* Macro: YY_USER_ACTION 
  * ---------------------
  * This flex built-in macro can be defined to provide an action which is
@@ -46,7 +51,42 @@ struct yyltype yylloc; // manually dclared for pp1, later Yacc provides
 static void DoBeforeEachAction(); 
 #define YY_USER_ACTION DoBeforeEachAction();
 
+
+int intToInt(char * in) {
+	int toReturn;
+	std::stringstream ss;
+	ss << in;
+	ss >> toReturn ? toReturn : 0;
+	return toReturn;
+}
+
+int hexToInt(char * in) {
+	int toReturn;
+	std::stringstream ss;
+	ss << std::hex << in;
+	ss >> toReturn ? toReturn : 0;
+	return toReturn;
+}
+
+int octToInt(char * in) {
+	int toReturn;
+	std::stringstream ss;
+	ss << std::oct << in;
+	ss >> toReturn ? toReturn : 0;
+	return toReturn;
+}
+
+double strToDbl(char * in) {
+	double toReturn;
+	std::stringstream ss;
+	ss << in;
+	ss >> toReturn ? toReturn : 0;
+	return toReturn;
+}
+
 %}
+
+%option yylineno
 
  /* The section before the first %% is the Definitions section of the lex
   * input file. Here is where you set options for the scanner, define lex
@@ -55,12 +95,133 @@ static void DoBeforeEachAction();
   * entries in the Rules section later. 
   */
 
+letter			[a-zA-Z]
+digit			[0-9]
+underscore		[_]
+space			[ ]
+tab			[\t]
+newline			[\n]
+b_true			true
+b_false			false
+dot			[\.]
+quote			["]
+string_char		[^\n\"]
+
+hex_int			0[xX][0-9a-fA-F]+
+oct_int			0[0-7]+
+
+plus			[+]
+minus			[\-]
+star			[*]
+divide			[/]
+mod			[%]
+not			[!]
+assign			[=]
+less_than		[<]
+less_equal		{less_than}{assign}
+greater_than		[>]
+greater_equal		{greater_than}{assign}
+equal			{assign}{assign}
+not_equal		{not}{assign}
+and			[&]{2}
+or			[|]{2}
+semi			[;]
+comma			[,]
+l_bracket		[\[]
+r_bracket		[\]]
+l_brace			[\{]
+r_brace			[\}]
+l_paren			[\(]
+r_paren			[\)]
+
+single			{divide}{divide}
+multi_start		{divide}{star}
+multi_end		{star}{divide}
+
+not_star		[^*\n]
+not_end			{star}[^*/\n]
+
+identifier		{letter}({letter}|{digit}|{underscore}){0,30}
+whitespace		({space}|{tab})
+boolean_constant	({b_true}|{b_false})
+integer_constant	{digit}+
+double_constant		({digit})+{dot}({digit})*
+string_constant		{quote}({string_char}*){quote}
+
+
+%x MULTI
 
 %%             /* BEGIN RULES SECTION */
  /* All patterns and actions should be placed between the start and stop
   * %% markers which delimit the Rules section. 
   */ 
 
+
+void			{return(T_Void);}
+int			{return(T_Int);}
+double			{return(T_Double);}
+bool			{return(T_Bool);}
+string			{return(T_String);}
+class			{return(T_Class);}
+interface		{return(T_Interface);}
+null			{return(T_Null);}
+this			{return(T_This);}
+extends			{return(T_Extends);}
+implements		{return(T_Implements);}
+for			{return(T_For);}
+while			{return(T_While);}
+if			{return(T_If);}
+else			{return(T_Else);}
+return			{return(T_Return);}
+break			{return(T_Break);}
+New			{return(T_New);}
+NewArray		{return(T_NewArray);}
+
+{plus}			{return('+');}
+{minus}			{return('-');}
+{star}			{return('*');}
+{divide}		{return('/');}
+{mod}			{return('%');}
+{less_than}		{return('<');}
+{less_equal}		{return(T_LessEqual);}
+{greater_than}		{return('>');}
+{greater_equal}		{return(T_GreaterEqual);}
+{assign}		{return('=');}
+{equal}			{return(T_Equal);}
+{not_equal}		{return(T_NotEqual);}
+{and}			{return(T_And);}
+{or}			{return(T_Or);}
+{not}			{return('!');}
+{semi}			{return(';');}
+{comma}			{return(',');}
+{dot}			{return('.');}
+{l_bracket}		{return('[');}
+{r_bracket}		{return(']');}
+{l_paren}		{return('(');}
+{r_paren}		{return(')');}
+{l_brace}		{return('{');}
+{r_brace}		{return('}');}
+
+{boolean_constant}	{return(T_BoolConstant);}
+
+{hex_int}		{yylval.integerConstant=hexToInt(yytext); return(T_IntConstant);}
+{oct_int}		{yylval.integerConstant=octToInt(yytext); return(T_IntConstant);}
+{integer_constant}	{yylval.integerConstant=intToInt(yytext); return(T_IntConstant);}
+{double_constant}	{yylval.doubleConstant=strToDbl(yytext); return(T_DoubleConstant);}
+{string_constant}	{yylval.stringConstant=yytext; return(T_StringConstant);}
+
+{identifier}		{return(T_Identifier);}
+
+{single}.*		{}
+
+{multi_start}		{BEGIN(MULTI);}
+<MULTI>{not_star}	{}
+<MULTI>{not_end}	{}
+<MULTI>{newline}	{yylineno++;}
+<MULTI>{multi_end}	{BEGIN(INITIAL);}
+
+{whitespace}		{}
+{newline}		{yycolumn = 1; yylineno++;}
 %%
 /* The closing %% above marks the end of the Rules section and the beginning
  * of the User Subroutines section. All text from here to the end of the
@@ -95,4 +256,10 @@ void InitScanner()
  */
 static void DoBeforeEachAction()
 {
+	yylloc.first_line = yylloc.last_line = yylineno;
+	yylloc.first_column = yycolumn;
+	yylloc.last_column = yycolumn + yyleng - 1;
+	yycolumn += yyleng;
+	strncpy(yylval.identifier, yytext, 32);
+	yylval.identifier[31] = '\0';
 }
