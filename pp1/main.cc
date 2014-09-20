@@ -20,9 +20,7 @@
 static void PrintOneToken(TokenType token, const char *text, YYSTYPE value,
                           yyltype loc)
 {
-  #pragma GCC diagnostic ignored "-Wnarrowing"
   char buffer[] = {'\'', token, '\'', '\0'};
-  #pragma GCC diagnostic pop
   const char *name = token >= T_Void ? gTokenNames[token - T_Void] : buffer;
   
   printf("%-12s line %d cols %d-%d is %s ", text,
