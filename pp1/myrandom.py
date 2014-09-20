@@ -151,7 +151,7 @@ def main():
 
 	    os.system("diff -w pytest/mine.out pytest/theirs.out")
 
-    #os.system("rm -rf pytest")
+    os.system("rm -rf pytest")
 
     os.system("make -s clean")
 
