@@ -20,6 +20,8 @@ do
 	cd ../tocompare
 done
 
+ERRORS=0
+
 for each in *.decaf *.frag;
 do
 	./dcc < $each &> ./"$each".mine
@@ -32,8 +34,14 @@ do
 		echo "$file1"
 		echo "$d"
 		read
+		$ERRORS=1
 	fi
 done
+
+if [ "$ERRORS" == "0" ];
+then
+	>&2 echo "No differences detected, try adding more test cases to ./samples"
+fi
 
 
 cd ../

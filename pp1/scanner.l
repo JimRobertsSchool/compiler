@@ -16,6 +16,9 @@
 #include "utility.h" // for PrintDebug()
 #include "errors.h"
 
+#include <cmath>
+#include <limits>
+#include <float.h>
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
@@ -55,6 +58,10 @@ static void DoBeforeEachAction();
 #define YY_USER_ACTION DoBeforeEachAction();
 
 
+/*
+ * Several functions to convert strings to correct numeric types
+ */
+
 int intToInt(char * in) {
 	int toReturn;
 	std::stringstream ss;
@@ -92,7 +99,16 @@ long int convertInt(char * in, int base) {
 }
 
 double convertFloat(char * in) {
-	return atof(in);
+	double to_return = atof(in);
+	/*
+	printf("%f\n", to_return);
+	if (to_return > DBL_MAX) {
+		return INFINITY;
+	} else if (to_return < -DBL_MAX) {
+		return -INFINITY;
+	}
+	*/
+	return to_return;
 }
 
 %}
@@ -221,7 +237,7 @@ NewArray		{return(T_NewArray);}
 
 {hex_int}		{yylval.integerConstant=convertInt(yytext, 16); return(T_IntConstant);}
 {integer_constant}	{yylval.integerConstant=convertInt(yytext, 10); return(T_IntConstant);}
-{double_constant}	{yylval.doubleConstant=strToDbl(yytext); return(T_DoubleConstant);}
+{double_constant}	{yylval.doubleConstant=convertFloat(yytext); return(T_DoubleConstant);}
 {string_constant}	{yylval.stringConstant=yytext; return(T_StringConstant);}
 {half_string}		{ReportError::UntermString(&yylloc, yytext);}
 
@@ -230,7 +246,7 @@ NewArray		{return(T_NewArray);}
 
 
 {whitespace}		{}
-{tabspace}		{yycolumn += tabspaces;}
+{tabspace}		{yycolumn = ((yycolumn/8)+1)*8+1;}
 {newline}		{yycolumn = 1; yylineno++;}
 .			{ReportError::UnrecogChar(&yylloc, yytext[0]);}
 %%
@@ -285,10 +301,13 @@ void InitScanner()
  */
 static void DoBeforeEachAction()
 {
+	// Set up location in order to keep track of the column and line numbers
 	yylloc.first_line = yylloc.last_line = yylineno;
 	yylloc.first_column = yycolumn;
 	yylloc.last_column = yycolumn + yyleng - 1;
 	yycolumn += yyleng;
+
+	// Set identifier, limit to 32 bytes, null terminate the string
 	strncpy(yylval.identifier, yytext, 32);
 	yylval.identifier[31] = '\0';
 }

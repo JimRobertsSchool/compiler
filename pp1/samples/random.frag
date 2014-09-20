@@ -1,0 +1,35 @@
+tru
+true
+false
+False
+		l;dkjfa;sdklfj
+		sadfjasdfklsjadfasd
+		fasdfasdfjsd
+
+		sdafjsdafk
+		32
+		54pfjwe4oi'rfop
+		rf
+		f
+		weraf
+		^he45h
+		wre
+		wer
+		wea
+		erg
+		6u5
+		54
+		drg
+		fg
+		i86
+		7i6
+		3t
+		rg
+		rth$%YRG
+		$%g
+		g5
+		RE
+		FGrg
+		fg
+4 + -10
+84173.e+150398
