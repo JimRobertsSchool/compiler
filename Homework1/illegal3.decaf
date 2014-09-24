@@ -1,0 +1,27 @@
+// Two else statements at the end of one if statement, "hidden" to the untrained eye by indentation
+int x;
+
+int main() {
+	Print(x = ReadInteger(), -0);
+
+	while ((x = x - 1) > 0) {
+		if((x%42) == 5) {
+			Print("Why here");
+			break;
+		} else if ((x%5) == 3) {
+			Print("Get in the choppa");
+		} else {
+			x = x;
+		}
+	}
+
+	if (4 < 7) {
+		if (true) {
+			Print("This is true right?");
+		} else {
+			Print("Not this one");
+	} else {
+		Print("Are things balanced here?");
+	}
+	}
+}

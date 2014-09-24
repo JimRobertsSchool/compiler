@@ -1,0 +1,29 @@
+// A main function to test the parsing of various expresisons and a dangling else
+int v;
+bool b;
+
+int main() {
+
+	v = 3;
+	(2);
+	3 + 0;
+	3 - v;
+	4 * v * v;
+	v = v / v;
+	v % 3;
+	v = -v;
+	b = v < 4;
+	b = b && b;
+	b = !b;
+	if ( b ) {
+		return v;
+	}
+
+	if (v < 5) {
+		return v + 3;
+	} else {
+		return -10;
+	}
+
+
+}

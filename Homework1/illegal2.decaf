@@ -1,0 +1,19 @@
+// Can't implement a method inside of an interface
+Implementor x;
+
+int main() {
+	x = New(Implementor);
+	Print(x.getObj());
+}
+
+interface INT {
+	string getObj() {
+		return "INT";
+	}
+}
+
+class Implementor implements INT {
+	string getObj() {
+		return "Implementor INT";
+	}
+}

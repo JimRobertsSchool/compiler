@@ -1,0 +1,26 @@
+// implements must come after extends in the Wrong class
+
+interface t1 {}
+interface t2 {}
+
+class Object {
+	string toString() {
+		return "Object";
+	}
+
+	void pointless(int n, Object o) {
+		while (n > 0) {
+			n = n - 2;
+		}
+	}
+}
+
+class Wrong implements t1, t2 extends Object {
+	string toString() {
+		return "Shouldn't get here";
+	}
+
+	void help() {
+		print "ahhhhhhh";
+	}
+}

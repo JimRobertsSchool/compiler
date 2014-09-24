@@ -1,0 +1,59 @@
+// A class which should calculate Fibonacci in two different ways and ensure they are the same
+interface inter {void say2();}
+class Object {
+	string toString() {
+		return "object";
+	}
+}
+class Test extends Object implements inter {
+	int base;
+
+	int fib(int num) {
+
+		while(true) {
+			break;
+		}
+
+		if (num == 0 || num == 1) {
+			return 1;
+		}
+
+		return this.fib(num - 1) + this.fib(num - 2);
+
+	}
+
+	int fibDyn(int num) {
+
+		int[] calc;
+		int i;
+
+		i = 2;
+		calc = NewArray(num + 1, int);
+
+		calc[0] = calc[1] = 1;
+
+		for (; i <= num; i = i + 1) {
+			calc[i] = calc[i-1] + calc[i-2];
+		}
+
+		return calc[num];
+
+	}
+
+	void say2() {
+		Print(2);
+	}
+
+}
+
+int main() {
+	Test t;
+	t = New(Test);
+	if (t.fibDyn(10) == t.fib(10)) {
+		Print("Same");
+	} else {
+		Print(":(");
+	}
+
+	return 0;
+}

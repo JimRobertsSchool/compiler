@@ -1,0 +1,29 @@
+// input: an integer
+// output: sum of numbers in range(0, input)
+int x;
+string y;
+
+int[] x_;
+double y1;
+
+void x(int y, bool j) {
+	return;
+}
+
+int main() {
+
+	int res;
+
+	res = 0;
+	x = ReadInteger();
+
+	while (x >= 0 && x > 0 || false || false == true || true != true || !true) {
+		res = res + x;
+		x = x - 1;
+	}
+
+	Print(res);
+
+}
+
+interface in1 {}
