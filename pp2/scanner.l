@@ -106,6 +106,8 @@ SINGLE_COMMENT    ("//"[^\n]*)
 
 
  /* -------------------- Operators ----------------------------- */
+"++"                { return T_Inc;         }
+"--"                { return T_Dec;         }
 "<="                { return T_LessEqual;   }
 ">="                { return T_GreaterEqual;}
 "=="                { return T_Equal;       }

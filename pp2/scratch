@@ -1,0 +1,52 @@
+
+class ArrayType : public Type 
+class NamedType : public Type 
+class Type : public Node 
+class PrintStmt : public Stmt
+class ReturnStmt : public Stmt  
+class BreakStmt : public Stmt 
+class IfStmt : public ConditionalStmt 
+class WhileStmt : public LoopStmt 
+class ForStmt : public LoopStmt 
+class LoopStmt : public ConditionalStmt 
+class ConditionalStmt : public Stmt
+class StmtBlock : public Stmt 
+class Stmt : public Node
+class Program : public Node
+class Decl;
+class VarDecl;
+class Expr;
+class ReadLineExpr : public Expr
+class ReadIntegerExpr : public Expr
+class NewArrayExpr : public Expr
+class NewExpr : public Expr
+class Call : public Expr 
+class FieldAccess : public LValue 
+class ArrayAccess : public LValue 
+class This : public Expr 
+class LValue : public Expr 
+class AssignExpr : public CompoundExpr 
+class LogicalExpr : public CompoundExpr 
+class EqualityExpr : public CompoundExpr 
+class RelationalExpr : public CompoundExpr 
+class ArithmeticExpr : public CompoundExpr 
+class CompoundExpr : public Expr
+class Operator : public Node 
+class NullConstant: public Expr 
+class StringConstant : public Expr 
+class BoolConstant : public Expr 
+class DoubleConstant : public Expr 
+class IntConstant : public Expr 
+class EmptyExpr : public Expr
+class Expr : public Stmt 
+class NamedType; // for new
+class Type; // for NewArray
+class FnDecl : public Decl 
+class InterfaceDecl : public Decl 
+class ClassDecl : public Decl 
+class VarDecl : public Decl 
+class Decl : public Node 
+class Type;
+class NamedType;
+class Identifier;
+class Stmt;
