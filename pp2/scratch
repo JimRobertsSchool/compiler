@@ -1,4 +1,3 @@
-
 class ArrayType : public Type 
 class NamedType : public Type 
 class Type : public Node 
@@ -13,9 +12,6 @@ class ConditionalStmt : public Stmt
 class StmtBlock : public Stmt 
 class Stmt : public Node
 class Program : public Node
-class Decl;
-class VarDecl;
-class Expr;
 class ReadLineExpr : public Expr
 class ReadIntegerExpr : public Expr
 class NewArrayExpr : public Expr
@@ -46,7 +42,3 @@ class InterfaceDecl : public Decl
 class ClassDecl : public Decl 
 class VarDecl : public Decl 
 class Decl : public Node 
-class Type;
-class NamedType;
-class Identifier;
-class Stmt;
