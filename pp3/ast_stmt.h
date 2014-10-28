@@ -91,6 +91,7 @@ class IfStmt : public ConditionalStmt
   
   public:
     IfStmt(Expr *test, Stmt *thenBody, Stmt *elseBody);
+    void Check();
 };
 
 class BreakStmt : public Stmt 

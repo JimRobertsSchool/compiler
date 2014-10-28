@@ -2,8 +2,6 @@
 #define LEVEL_H
 
 #include "hashtable.h"
-#include "list.h"
-
 class Decl;
 class Identifier;
 
@@ -20,6 +18,9 @@ class Level {
 		Decl * find(Identifier * id);
 		bool add(Decl * toAdd);
 		void link(Level * top);
+		Hashtable<Decl *> * getScope() {return scope;};
+		Level * getParent() {return parent;};
+		void print();
 
 		/*
 		static void checkList(List<Decl *> * l);
@@ -27,8 +28,6 @@ class Level {
 		*/
 
 };
-
-
 
 
 #endif

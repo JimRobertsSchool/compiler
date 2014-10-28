@@ -4,6 +4,7 @@
  */
 #include "ast_type.h"
 #include "ast_decl.h"
+#include "errors.h"
 #include <string.h>
 
  
@@ -22,6 +23,24 @@ Type *Type::boolType   = new Type("bool");
 Type *Type::nullType   = new Type("null");
 Type *Type::stringType = new Type("string");
 Type *Type::errorType  = new Type("error"); 
+
+void NamedType::Check() {
+	PrintDebug("ntype", "Entering named type");
+	initLevel(NULL, true);
+	printLevel();
+	Decl* inTree = lookup(id, true);
+	if (inTree == NULL) {
+		PrintDebug("ntype", "Not found: %s\n", id->getName());
+		ReportError::IdentifierNotDeclared(id, LookingForType);
+	};
+	PrintDebug("ntype", "Entering named type");
+
+};
+
+void ArrayType::Check() {
+
+};
+
 
 Type::Type(const char *n) {
     Assert(n);

@@ -13,28 +13,51 @@ Level::~Level() {
 };
 
 Decl * Level::find(Identifier * id) {
+	PrintDebug("find", "Looking up %s\n", id->getName());
 	return scope->Lookup(id->getName());
 };
 
 bool Level::add(Decl * toAdd) {
-	Decl * old = scope->Lookup(toAdd->getId()->getName());
+	//if old and conflicting then return false
+	PrintDebug("level", "adding\n");
+	Decl * old = find(toAdd->getId());
+	PrintDebug("level", "Level adding: %s\n", toAdd->getId()->getName());
+	/*
 	if (old == NULL) {
+		PrintDebug("level", "in the loop\n");
+
 		Level * p = parent;
-		while (parent != NULL && old == NULL) {
-			old = p->scope->Lookup(toAdd->getId()->getName());
+		while (p != NULL && old == NULL) {
+			old = p->find(toAdd->getId());
 			p = p->parent;
 		}
 	}
-	if (old->sGetT() != s_FDecl) {
+	PrintDebug("level", "Done loop\n");
+	*/
+	if (old != NULL && old->sGetT() != s_FDecl) {
 		ReportError::DeclConflict(toAdd, old);
+		PrintDebug("level", "in the if (T=%d)\n", old->sGetT());
 		return false;
 	}
+	scope->Enter(toAdd->getId()->getName(), toAdd);
+	PrintDebug("level", "normal return\n");
 	return true;
 };
 
+//might instead copy all from other level
 void Level::link(Level * top) {
 	parent = top;
 };
+
+void Level::print() {
+	Iterator<Decl*> it = scope->GetIterator();
+	Decl * temp;
+	while(temp = it.GetNextValue()) {
+		PrintDebug("level", "STUFF %s\n", temp->getId()->getName());
+	}
+	PrintDebug("level", "\n");
+};
+
 
 /*
 void Level::checkList(List<Decl *> * l) {

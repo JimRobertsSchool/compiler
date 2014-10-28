@@ -24,3 +24,54 @@ Identifier::Identifier(yyltype loc, const char *n) : Node(loc) {
     name = strdup(n);
 } 
 
+Level* Node::initLevel(Level * p, bool link) {
+	if(lvl==NULL)
+		lvl = new Level();
+	if (link)
+		lvl->link(p);
+	if (link && p==NULL) 
+		lvl->link(GetParent()->lvl);
+	return lvl;
+};
+
+Decl* Node::lookup(Identifier * id, bool parents) {
+	Decl* toReturn = NULL;
+	toReturn = lvl->find(id);
+
+	if (toReturn == NULL && parents) {
+		PrintDebug("find", "Looking in parents");
+		Level * p = lvl->getParent();
+		while(p!=NULL && toReturn == NULL) {
+			PrintDebug("find", "up scope");
+			p->print();
+			toReturn=p->find(id);
+			p = p->getParent();
+		}
+	}
+	if (toReturn != NULL) {
+		PrintDebug("find", toReturn->getId()->getName());
+	} else {
+		PrintDebug("find", "ID not found :(\n");
+	}
+
+	return toReturn;
+};
+
+void Node::printLevel() {
+
+	Level * cur = this->lvl;
+	while(cur != NULL) {
+		/*
+		Iterator<Decl*> it = cur->lvl->getScope()->GetIterator();
+		Decl * temp;
+		while(temp = it.GetNextValue()) {
+			PrintDebug("scope", "STUFF %s\n", temp->getId()->getName());
+		}
+		*/
+		cur->print();
+		cur = cur->getParent();
+	}
+	PrintDebug("scope", "\n");
+
+
+}

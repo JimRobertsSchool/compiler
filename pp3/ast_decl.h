@@ -41,6 +41,8 @@ class VarDecl : public Decl
   public:
     VarDecl(Identifier *name, Type *type);
     int sGetT() { return s_VDecl; }
+    Type * getType() {return type;};
+    void Check();
 };
 
 class ClassDecl : public Decl 
@@ -54,6 +56,7 @@ class ClassDecl : public Decl
     ClassDecl(Identifier *name, NamedType *extends, 
               List<NamedType*> *implements, List<Decl*> *members);
     int sGetT() { return s_CDecl; }
+    void Check();
 };
 
 class InterfaceDecl : public Decl 
@@ -64,6 +67,7 @@ class InterfaceDecl : public Decl
   public:
     InterfaceDecl(Identifier *name, List<Decl*> *members);
     int sGetT() { return s_IDecl; }
+    void Check();
 };
 
 class FnDecl : public Decl 
@@ -77,6 +81,8 @@ class FnDecl : public Decl
     FnDecl(Identifier *name, Type *returnType, List<VarDecl*> *formals);
     void SetFunctionBody(Stmt *b);
     int sGetT() { return s_FDecl; }
+    void Check();
+    bool samePrototype(FnDecl * parent);
 };
 
 #endif

@@ -83,7 +83,6 @@ template<class Element> class List {
 		    Nth(i)->Check();
 	    }
     };
-
     void addList(Level * l) {
 	    for (int i = 0; i < NumElements(); ++i) {
 		    l->add(Nth(i));

@@ -33,9 +33,11 @@
 #include "location.h"
 #include <iostream>
 
-#include "level.h"
 #include <string.h>
 
+class Level;
+class Identifier;
+class Decl;
 enum {
 	s_Decl,
 	s_VDecl, s_FDecl, s_CDecl, s_IDecl,
@@ -62,19 +64,23 @@ class Node
     Node *GetParent()        { return parent; }
     virtual int sGetT() { return s_DEFAULT; }
     virtual void Check() {};
+    Level* initLevel(Level * p = NULL, bool link = false);
+    Level * getLvl() {return lvl;};
+    Decl * lookup(Identifier * id, bool parents = true);
+    void printLevel();
 };
    
 
 class Identifier : public Node 
 {
   protected:
-    char *name;
+    const char *name;
     
   public:
     Identifier(yyltype loc, const char *name);
     friend std::ostream& operator<<(std::ostream& out, Identifier *id) { return out << id->name; }
 
-    char * getName() { return name; };
+    const char * getName() { return name; };
 };
 
 

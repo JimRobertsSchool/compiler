@@ -5,7 +5,63 @@
 #include "ast_decl.h"
 #include "ast_type.h"
 #include "ast_stmt.h"
+
+void VarDecl::Check() {
+	PrintDebug("vdecl", "entering var decl");
+	initLevel(NULL, true);
+	//lookup(id);
+	printLevel();
+	type->Check();
+	PrintDebug("vdecl", "exiting var decl");
+}
         
+void ClassDecl::Check() {
+	PrintDebug("cdecl", "entering class decl");
+	initLevel(NULL, true);
+	//lvl = new Level();
+	members->addList(lvl);
+	members->checkList();
+	
+	PrintDebug("cdecl", "leaving class decl");
+};
+
+void InterfaceDecl::Check() {
+	PrintDebug("idecl", "entering interface decl");
+	//lvl = new Level();
+	members->addList(lvl);
+	members->checkList();
+
+	PrintDebug("idecl", "leaving interface decl");
+};
+
+void FnDecl::Check() {
+	PrintDebug("fdecl", "entering fndecl");
+	
+	initLevel(NULL, true);
+	//lvl = new Level();
+	formals->addList(lvl);
+
+	body->initLevel(lvl, true);
+	//body->getLvl()->link(lvl);
+	PrintDebug("fdecl", "entering bodycheck");
+	body->Check();
+
+	PrintDebug("fdecl", "leaving fndecl");
+};
+
+bool FnDecl::samePrototype(FnDecl * parent) {
+	for(int i = 0; i < formals->NumElements(); ++i) {
+		VarDecl *p, *c;
+		p = parent->formals->Nth(i);
+		c = formals->Nth(i);
+		if(c->getType() != p->getType()) {
+			return false;
+		}
+	}
+	return true;
+};
+
+
          
 Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
     Assert(n != NULL);

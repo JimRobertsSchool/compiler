@@ -62,7 +62,7 @@ void PrintDebug(const char *key, const char *format, ...)
   va_start(args, format);
   vsprintf(buf, format, args);
   va_end(args);
-  printf("+++ (%s): %s%s", key, buf, buf[strlen(buf)-1] != '\n'? "\n" : "");
+  fprintf(stdout, "+++ (%s): %s%s", key, buf, buf[strlen(buf)-1] != '\n'? "\n" : "");
 }
 
 

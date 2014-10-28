@@ -6,7 +6,6 @@
 #include "ast_type.h"
 #include "ast_decl.h"
 #include "ast_expr.h"
-#include "level.h"
 
 
 Program::Program(List<Decl*> *d) {
@@ -22,16 +21,44 @@ void Program::Check() {
      *      checking itself, which makes for a great use of inheritance
      *      and polymorphism in the node classes.
      */
-
-	Level * globals = new Level();
+	List<char *> debugs = List<char *>();
+	if(true) {
+		//debugs.Append("program");
+		//debugs.Append("find");
+		//debugs.Append("scope");
+		//debugs.Append("level");
+		//debugs.Append("cdecl");
+		//debugs.Append("vdecl");
+		//debugs.Append("fdecl");
+		//debugs.Append("sblock");
+		//debugs.Append("ntype");
+	}
+	for(int i = 0; i < debugs.NumElements(); ++i) {
+		SetDebugForKey(debugs.Nth(i), true);
+	}
+		
+	PrintDebug("program", "Entering program\n");
+	PrintDebug("program", "adding\n");
+	//Level * globals = new Level();
+	initLevel();
 	/*
+	Hashtable<ClassDecl *> * c = new Hashtable<ClassDecl *>();
 	for(int i = 0; i < decls->NumElements(); ++i) {
-		globals->add(decls->Nth(i));
+		Decl * cur = decls->Nth(i);
+		//globals->add(decls->Nth(i));
+		switch (cur->sGetT()) {
+			case s_CDecl: {
+					PrintDebug("program", "Found Class %s\n", ((ClassDecl *)cur)->getId()->getName());
+					c->Enter(cur->getId()->getName(), ((ClassDecl *)cur));
+				      }; break;
+		}
 	}
 	*/
 	//globals->addList(decls, globals);
-	decls->addList(globals);
-	lvl = globals;
+	decls->addList(lvl);
+
+	printLevel();
+	PrintDebug("program", "done adding\n");
 
 	/*
 	for(int i = 0; i < decls->NumElements(); ++i) {
@@ -44,7 +71,9 @@ void Program::Check() {
 }
 
 void StmtBlock::Check() {
-	lvl = new Level();
+	PrintDebug("sblock", "entering sblock\n");
+	initLevel(NULL, true);
+	//lvl = new Level();
 	/*
 	lvl->addList((List<Decl *>*)decls, lvl);
 	lvl->checkList((List<Decl *>*)decls);
@@ -53,10 +82,15 @@ void StmtBlock::Check() {
 	decls->addList(lvl);
 	decls->checkList();
 	stmts->checkList();
+	PrintDebug("sblock", "leaving sblock\n");
 };
 
 void ConditionalStmt::Check() {
 	body->Check();
+};
+
+void IfStmt::Check() {
+	body->Check();	
 };
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {
