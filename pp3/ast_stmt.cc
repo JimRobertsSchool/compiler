@@ -86,11 +86,14 @@ void StmtBlock::Check() {
 };
 
 void ConditionalStmt::Check() {
+	initLevel(NULL, true);
+
 	body->Check();
 };
 
 void IfStmt::Check() {
-	body->Check();	
+	initLevel(NULL, true);
+	elseBody->Check();
 };
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {

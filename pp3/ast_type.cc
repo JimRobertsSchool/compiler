@@ -38,7 +38,13 @@ void NamedType::Check() {
 };
 
 void ArrayType::Check() {
-
+/*
+	initLevel(NULL, true);
+	Decl * inTree = lookup(elemType->getName(), true);
+	if(inTree == NULL) {
+		ReportError::IdentifierNotDeclared(id, LookingForType);
+	}
+	*/
 };
 
 

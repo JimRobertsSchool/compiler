@@ -27,6 +27,7 @@ void ClassDecl::Check() {
 
 void InterfaceDecl::Check() {
 	PrintDebug("idecl", "entering interface decl");
+	initLevel();
 	//lvl = new Level();
 	members->addList(lvl);
 	members->checkList();

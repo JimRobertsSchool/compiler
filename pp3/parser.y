@@ -111,7 +111,6 @@ Program   :    DeclList            {
                                       Program *program = new Program($1);
                                       // if no errors, advance to next phase
                                       if (ReportError::NumErrors() == 0) 
-					  fprintf(stderr, "checking\n");
                                           program->Check();
                                     }
           ;

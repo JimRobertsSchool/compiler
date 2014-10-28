@@ -5,8 +5,8 @@ class MMMMM {
 	int x;
 	int n;
 	void HHHHH(int x) {
-		Cow x;
 		MMMMM y;
+		x=x+2;
 	}
 
 
