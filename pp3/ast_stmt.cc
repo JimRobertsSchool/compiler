@@ -23,6 +23,7 @@ void Program::Check() {
      */
 	List<char *> debugs = List<char *>();
 	if(true) {
+		//debugs.Append("entry");
 		//debugs.Append("program");
 		//debugs.Append("find");
 		//debugs.Append("scope");
@@ -32,12 +33,13 @@ void Program::Check() {
 		//debugs.Append("fdecl");
 		//debugs.Append("sblock");
 		//debugs.Append("ntype");
+		//debugs.Append("if");
 	}
 	for(int i = 0; i < debugs.NumElements(); ++i) {
 		SetDebugForKey(debugs.Nth(i), true);
 	}
 		
-	PrintDebug("program", "Entering program\n");
+	PrintDebug("entry", "Entering program\n");
 	PrintDebug("program", "adding\n");
 	//Level * globals = new Level();
 	initLevel();
@@ -67,11 +69,13 @@ void Program::Check() {
 	*/
 	//globals->checkList(decls);
 	decls->checkList();
+
+	PrintDebug("entry", "leaving program\n");
 	
 }
 
 void StmtBlock::Check() {
-	PrintDebug("sblock", "entering sblock\n");
+	PrintDebug("entry", "entering sblock\n");
 	initLevel(NULL, true);
 	//lvl = new Level();
 	/*
@@ -82,18 +86,27 @@ void StmtBlock::Check() {
 	decls->addList(lvl);
 	decls->checkList();
 	stmts->checkList();
-	PrintDebug("sblock", "leaving sblock\n");
+	PrintDebug("entry", "leaving sblock\n");
 };
 
 void ConditionalStmt::Check() {
+	PrintDebug("entry", "entering conditional");
 	initLevel(NULL, true);
 
 	body->Check();
+	PrintDebug("entry", "leaving conditional");
 };
 
 void IfStmt::Check() {
+	PrintDebug("entry", "entering if");
 	initLevel(NULL, true);
-	elseBody->Check();
+	PrintDebug("if", "checking body");
+	body->Check();
+	PrintDebug("if", "checking else");
+	if (elseBody != NULL) {
+		elseBody->Check();
+	}
+	PrintDebug("entry", "leaving if");
 };
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {

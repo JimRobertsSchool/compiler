@@ -6,6 +6,7 @@ class MMMMM {
 	int n;
 	void HHHHH(int x) {
 		MMMMM y;
+		int m;
 		x=x+2;
 	}
 

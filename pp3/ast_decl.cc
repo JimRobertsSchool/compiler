@@ -7,36 +7,36 @@
 #include "ast_stmt.h"
 
 void VarDecl::Check() {
-	PrintDebug("vdecl", "entering var decl");
+	PrintDebug("entry", "entering var decl");
 	initLevel(NULL, true);
 	//lookup(id);
 	printLevel();
 	type->Check();
-	PrintDebug("vdecl", "exiting var decl");
+	PrintDebug("entry", "exiting var decl");
 }
         
 void ClassDecl::Check() {
-	PrintDebug("cdecl", "entering class decl");
+	PrintDebug("entry", "entering class decl");
 	initLevel(NULL, true);
 	//lvl = new Level();
 	members->addList(lvl);
 	members->checkList();
 	
-	PrintDebug("cdecl", "leaving class decl");
+	PrintDebug("entry", "leaving class decl");
 };
 
 void InterfaceDecl::Check() {
-	PrintDebug("idecl", "entering interface decl");
+	PrintDebug("entry", "entering interface decl");
 	initLevel();
 	//lvl = new Level();
 	members->addList(lvl);
 	members->checkList();
 
-	PrintDebug("idecl", "leaving interface decl");
+	PrintDebug("entry", "leaving interface decl");
 };
 
 void FnDecl::Check() {
-	PrintDebug("fdecl", "entering fndecl");
+	PrintDebug("entry", "entering fndecl");
 	
 	initLevel(NULL, true);
 	//lvl = new Level();
@@ -47,7 +47,7 @@ void FnDecl::Check() {
 	PrintDebug("fdecl", "entering bodycheck");
 	body->Check();
 
-	PrintDebug("fdecl", "leaving fndecl");
+	PrintDebug("entry", "leaving fndecl");
 };
 
 bool FnDecl::samePrototype(FnDecl * parent) {

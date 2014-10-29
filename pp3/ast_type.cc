@@ -25,7 +25,7 @@ Type *Type::stringType = new Type("string");
 Type *Type::errorType  = new Type("error"); 
 
 void NamedType::Check() {
-	PrintDebug("ntype", "Entering named type");
+	PrintDebug("entry", "Entering named type");
 	initLevel(NULL, true);
 	printLevel();
 	Decl* inTree = lookup(id, true);
@@ -33,11 +33,12 @@ void NamedType::Check() {
 		PrintDebug("ntype", "Not found: %s\n", id->getName());
 		ReportError::IdentifierNotDeclared(id, LookingForType);
 	};
-	PrintDebug("ntype", "Entering named type");
+	PrintDebug("entry", "Entering named type");
 
 };
 
 void ArrayType::Check() {
+	PrintDebug("entry", "Entering array");
 /*
 	initLevel(NULL, true);
 	Decl * inTree = lookup(elemType->getName(), true);
@@ -45,6 +46,7 @@ void ArrayType::Check() {
 		ReportError::IdentifierNotDeclared(id, LookingForType);
 	}
 	*/
+	PrintDebug("entry", "leaving array");
 };
 
 
