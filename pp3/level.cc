@@ -13,18 +13,18 @@ Level::~Level() {
 };
 
 Decl * Level::find(Identifier * id) {
-	PrintDebug("find", "Looking up %s\n", id->getName());
+	//PrintDebug("find", "Looking up %s\n", id->getName());
 	return scope->Lookup(id->getName());
 };
 
 bool Level::add(Decl * toAdd) {
 	//if old and conflicting then return false
-	PrintDebug("level", "adding\n");
+	//PrintDebug("level", "adding\n");
 	Decl * old = find(toAdd->getId());
-	PrintDebug("level", "Level adding: %s\n", toAdd->getId()->getName());
+	//PrintDebug("level", "Level adding: %s\n", toAdd->getId()->getName());
 	/*
 	if (old == NULL) {
-		PrintDebug("level", "in the loop\n");
+		//PrintDebug("level", "in the loop\n");
 
 		Level * p = parent;
 		while (p != NULL && old == NULL) {
@@ -32,13 +32,13 @@ bool Level::add(Decl * toAdd) {
 			p = p->parent;
 		}
 	}
-	PrintDebug("level", "Done loop\n");
+	//PrintDebug("level", "Done loop\n");
 	*/
 	if (old != NULL) {
 		/*
 		   if (old != NULL && old->sGetT() != s_FDecl) {
 		   ReportError::DeclConflict(toAdd, old);
-		   PrintDebug("level", "in the if (T=%d)\n", old->sGetT());
+		   //PrintDebug("level", "in the if (T=%d)\n", old->sGetT());
 		   return false;
 		   } else */if (old->sGetT() == s_FDecl && old->sGetT() == toAdd->sGetT()) {
 			   FnDecl *o = (FnDecl *)old;
@@ -52,7 +52,7 @@ bool Level::add(Decl * toAdd) {
 		   return false;
 	};
 	scope->Enter(toAdd->getId()->getName(), toAdd);
-	PrintDebug("level", "normal return\n");
+	//PrintDebug("level", "normal return\n");
 	return true;
 };
 
@@ -65,9 +65,9 @@ void Level::print() {
 	Iterator<Decl*> it = scope->GetIterator();
 	Decl * temp;
 	while((temp = it.GetNextValue())) {
-		PrintDebug("level", "STUFF %s\n", temp->getId()->getName());
+		//PrintDebug("level", "STUFF %s\n", temp->getId()->getName());
 	}
-	PrintDebug("level", "\n");
+	//PrintDebug("level", "\n");
 };
 
 

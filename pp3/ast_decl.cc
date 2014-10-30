@@ -8,17 +8,17 @@
 #include "errors.h"
 
 void VarDecl::Check() {
-	PrintDebug("entry", "entering var decl");
+	//PrintDebug("entry", "entering var decl");
 	initLevel(NULL, true);
 	//lookup(id);
 	printLevel();
-	PrintDebug("entry", "entering type check");
+	//PrintDebug("entry", "entering type check");
 	type->Check();
-	PrintDebug("entry", "exiting var decl");
+	//PrintDebug("entry", "exiting var decl");
 }
         
 void ClassDecl::Check() {
-	PrintDebug("entry", "entering class decl");
+	//PrintDebug("entry", "entering class decl");
 	initLevel(NULL, true);
 	if (implements != NULL) {
 		implements->checkList();
@@ -55,10 +55,10 @@ void ClassDecl::Check() {
 		listMade = true;
 		implements = new List<NamedType *>();
 	}
-	PrintDebug("cdecl", "classmade = %d, implements is %ld\n", listMade, implements);
+	//PrintDebug("cdecl", "classmade = %d, implements is %ld\n", listMade, implements);
 	if(extends!=NULL && implements != NULL) implements->Append(extends);
 
-	PrintDebug("cdecl", "Checking inherited methods %s\n", id->getName());
+	//PrintDebug("cdecl", "Checking inherited methods %s\n", id->getName());
 	
 	for(int i = 0; implements != NULL && i < implements->NumElements(); ++i) {
 
@@ -68,20 +68,20 @@ void ClassDecl::Check() {
 			continue;
 		}
 		if(d->sGetT() == s_IDecl) {
-			PrintDebug("cdecl", "in interface");
+			//PrintDebug("cdecl", "in interface");
 			InterfaceDecl * imp = (InterfaceDecl *) d;
 			List<Decl *> * mem = imp->getMembers();
 			if (mem == NULL) continue;
 			for(int j = 0; j < mem->NumElements(); ++j) {
-				PrintDebug("cdecl", "looping");
+				//PrintDebug("cdecl", "looping");
 				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
-				PrintDebug("cdecl", "found functioni1 %s", toDo->getId()->getName());
-				PrintDebug("cdecl", "checking if");
+				//PrintDebug("cdecl", "found functioni1 %s", toDo->getId()->getName());
+				//PrintDebug("cdecl", "checking if");
 				if (toComp != NULL) {
 					bool equiv = toDo->samePrototype(toComp);
-					PrintDebug("cdecl", "herehere, %s", equiv ? "true" : "false");
+					//PrintDebug("cdecl", "herehere, %s", equiv ? "true" : "false");
 					if (!equiv) {
 						ReportError::OverrideMismatch(toComp);
 					}
@@ -89,22 +89,24 @@ void ClassDecl::Check() {
 			}
 		} else if (d->sGetT() == s_CDecl) {
 			ClassDecl * ext = (ClassDecl *)d;
-			PrintDebug("cdecl", "found extended class %s", ext->id->getName());
+			//PrintDebug("cdecl", "found extended class %s", ext->id->getName());
 			List<Decl *> * mem = ext->members;
 			if (mem == NULL) continue;
 			for(int j = 0; j < mem->NumElements(); ++j) {
 				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
-				PrintDebug("cdecl", "found function ext %s", toDo->getId()->getName());
+				//PrintDebug("cdecl", "found function ext %s", toDo->getId()->getName());
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
+				/*
 				if(toComp!=NULL) 
-					PrintDebug("cdecl", "found function in current class %s", toComp->getId()->getName());
+					//PrintDebug("cdecl", "found function in current class %s", toComp->getId()->getName());
 				else PrintDebug("cdecl", "%s not founds", toDo->getId()->getName());
+				*/
 				if (toComp != NULL && !(toDo->samePrototype(toComp))) {
-					PrintDebug("cdecl", "herehere2");
+					//PrintDebug("cdecl", "herehere2");
 					ReportError::OverrideMismatch(toComp);
 				}
-				PrintDebug("cdecl", "end of iteration");
+				//PrintDebug("cdecl", "end of iteration");
 			}
 		}
 	}
@@ -115,54 +117,54 @@ void ClassDecl::Check() {
 	}
 	
 	
-	PrintDebug("entry", "leaving class decl");
+	//PrintDebug("entry", "leaving class decl");
 };
 
 void InterfaceDecl::Check() {
-	PrintDebug("entry", "entering interface decl");
+	//PrintDebug("entry", "entering interface decl");
 	initLevel(NULL, true);
 	//lvl = new Level();
 	members->addList(lvl);
 	members->checkList();
 
-	PrintDebug("entry", "leaving interface decl");
+	//PrintDebug("entry", "leaving interface decl");
 };
 
 void FnDecl::Check() {
-	PrintDebug("entry", "entering fndecl");
+	//PrintDebug("entry", "entering fndecl");
 	
 	initLevel(NULL, true);
 	//lvl = new Level();
-	PrintDebug("fdecl", "adding formals");
+	//PrintDebug("fdecl", "adding formals");
 	formals->addList(lvl);
 	formals->checkList();
 
-	PrintDebug("fdecl", "initializing body");
-	if(body == NULL) PrintDebug("fdecl", "body is null");
+	//PrintDebug("fdecl", "initializing body");
+	if(body == NULL) //PrintDebug("fdecl", "body is null");
 	if (body != NULL) {
 		body->initLevel(lvl, true);
 		//body->getLvl()->link(lvl);
-		PrintDebug("fdecl", "entering bodycheck");
+		//PrintDebug("fdecl", "entering bodycheck");
 		body->Check();
 	}
 
-	PrintDebug("entry", "leaving fndecl");
+	//PrintDebug("entry", "leaving fndecl");
 };
 
 bool FnDecl::samePrototype(FnDecl * parent) {
-	PrintDebug("entry", "Entering proto");
+	//PrintDebug("entry", "Entering proto");
 	if(parent != NULL && parent->formals != NULL && formals != NULL && parent->formals->NumElements() != formals->NumElements()) return false;
-	PrintDebug("proto", "here");
+	//PrintDebug("proto", "here");
 	for(int i = 0; i < formals->NumElements(); ++i) {
 		VarDecl *p, *c;
 		p = parent->formals->Nth(i);
 		c = formals->Nth(i);
 		if(!(c->getType()->IsEquivalentTo(p->getType()))) {
-			PrintDebug("entry", "leaving proto");
+			//PrintDebug("entry", "leaving proto");
 			return false;
 		}
 	}
-	PrintDebug("entry", "leaving proto");
+	//PrintDebug("entry", "leaving proto");
 	return true;
 };
 

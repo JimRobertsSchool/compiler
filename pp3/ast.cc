@@ -31,7 +31,7 @@ Level* Node::initLevel(Level * p, bool link) {
 	}
 	if (link) {
 		lvl->link(p);
-	//	PrintDebug("entry", "two");
+	//	//PrintDebug("entry", "two");
 	}
 	if (link && p==NULL) {
 		lvl->link(GetParent()->lvl);
@@ -46,19 +46,19 @@ Decl* Node::lookup(Identifier * id, bool parents) {
 	toReturn = lvl->find(id);
 
 	if (toReturn == NULL && parents) {
-		PrintDebug("find", "Looking in parents");
+		//PrintDebug("find", "Looking in parents");
 		Level * p = lvl->getParent();
 		while(p!=NULL && toReturn == NULL) {
-			PrintDebug("find", "up scope");
+			//PrintDebug("find", "up scope");
 			p->print();
 			toReturn=p->find(id);
 			p = p->getParent();
 		}
 	}
 	if (toReturn != NULL) {
-		PrintDebug("find", toReturn->getId()->getName());
+		//PrintDebug("find", toReturn->getId()->getName());
 	} else {
-		PrintDebug("find", "ID not found :(\n");
+		//PrintDebug("find", "ID not found :(\n");
 	}
 
 	return toReturn;
@@ -72,13 +72,13 @@ void Node::printLevel() {
 		Iterator<Decl*> it = cur->lvl->getScope()->GetIterator();
 		Decl * temp;
 		while(temp = it.GetNextValue()) {
-			PrintDebug("scope", "STUFF %s\n", temp->getId()->getName());
+			//PrintDebug("scope", "STUFF %s\n", temp->getId()->getName());
 		}
 		*/
 		cur->print();
 		cur = cur->getParent();
 	}
-	PrintDebug("scope", "\n");
+	//PrintDebug("scope", "\n");
 
 
 }

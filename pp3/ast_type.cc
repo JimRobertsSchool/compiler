@@ -25,18 +25,18 @@ Type *Type::stringType = new Type("string");
 Type *Type::errorType  = new Type("error"); 
 
 void NamedType::Check() {
-	PrintDebug("entry", "Entering named type");
+	//PrintDebug("entry", "Entering named type");
 	initLevel(NULL, true);
 	printLevel();
 	Decl* inTree = lookup(id, true);
 	if (inTree == NULL) {
-		PrintDebug("ntype", "Not found: %s\n", id->getName());
+		//PrintDebug("ntype", "Not found: %s\n", id->getName());
 		reasonT r = LookingForType;
 		int s = parent->sGetT();
 		if(s == s_CDecl) {
 			ClassDecl * p = (ClassDecl *)parent;
 			if (p->getExtends() != NULL && strcmp(p->getExtends()->getId()->getName(), id->getName())) {
-				PrintDebug("ntype", "found: %s, %s\n", id->getName(), p->getExtends()->getId()->getName());
+				//PrintDebug("ntype", "found: %s, %s\n", id->getName(), p->getExtends()->getId()->getName());
 				ReportError::IdentifierNotDeclared(id, LookingForInterface);
 			} else {
 				ReportError::IdentifierNotDeclared(id, LookingForClass);
@@ -45,7 +45,7 @@ void NamedType::Check() {
 			   List<NamedType *> *t = ((ClassDecl *)parent)->getInterface();
 			   for(int i = 0; i < t->NumElements(); ++i) {
 			   if (!strcmp(t->Nth(i)->getId()->getName(), id->getName())) {
-			   PrintDebug("ntype", "found: %s\n", id->getName());
+			   //PrintDebug("ntype", "found: %s\n", id->getName());
 			   ReportError::IdentifierNotDeclared(id, LookingForClass);
 			   return;
 			   }
@@ -56,15 +56,15 @@ void NamedType::Check() {
 		//else if (s == s_CDecl) ReportError::IdentifierNotDeclared(id, LookingForClass);
 		else ReportError::IdentifierNotDeclared(id, LookingForType);
 	};
-	PrintDebug("entry", "Entering named type");
+	//PrintDebug("entry", "Entering named type");
 
 };
 
 void ArrayType::Check() {
-	PrintDebug("entry", "Entering array");
+	//PrintDebug("entry", "Entering array");
 	initLevel(NULL, true);
 	/*
-	PrintDebug("atype", "here zero %d", location->first_line);
+	//PrintDebug("atype", "here zero %d", location->first_line);
 	yyltype l = yyltype();
 	l.first_line =   location->first_line;
 	l.last_line =    location->last_line;
@@ -72,11 +72,11 @@ void ArrayType::Check() {
 	l.last_column =  location->last_column;
 	PrintDebug("atype", "here zero %s", elemType->getName());
 	Identifier * fake = new Identifier(l, elemType->getName());
-	PrintDebug("atype", "here one");
+	//PrintDebug("atype", "here one");
 	Decl * inTree = lookup(fake, true);
 	PrintDebug("atype", "here two");
 	if (inTree == NULL) {
-		PrintDebug("atype", "here three");
+		//PrintDebug("atype", "here three");
 		ReportError::IdentifierNotDeclared(fake, LookingForType);
 	}
 	*/
@@ -84,7 +84,7 @@ void ArrayType::Check() {
 		NamedType * t = ((NamedType *)elemType);
 		Decl * inTree = lookup(t->getId(), true);
 		if (inTree == NULL) {
-			PrintDebug("ntype", "Not found: %s\n", t->getId()->getName());
+			//PrintDebug("ntype", "Not found: %s\n", t->getId()->getName());
 			reasonT r = LookingForType;
 			int s = parent->sGetT();
 			if(s == s_CDecl) {
@@ -100,59 +100,59 @@ void ArrayType::Check() {
 	} else if(elemType->sGetT() == s_AType) {
 		((ArrayType *)elemType)->Check();
 	}
-	PrintDebug("entry", "leaving array");
+	//PrintDebug("entry", "leaving array");
 };
 
 bool NamedType::IsEquivalentTo(Type * other) {
-	PrintDebug("entry", "Entering named equivalence check");
+	//PrintDebug("entry", "Entering named equivalence check");
 
 	if(other == NULL) return false;
 
 	if (other-> sGetT() == s_DType) {
-		PrintDebug("entry", "leaving named equivalence check");
+		//PrintDebug("entry", "leaving named equivalence check");
 		return false;
 
 	} else if(other-> sGetT() == s_NType) { 
-		PrintDebug("entry", "leaving named equivalence check");
+		//PrintDebug("entry", "leaving named equivalence check");
 		const char * one = id->getName();
-		PrintDebug("entry", "two %s", one);
+		//PrintDebug("entry", "two %s", one);
 		const char * two = ((NamedType *)other)->id->getName();
 
 		bool toReturn  = !(strcmp(one, two));
-		PrintDebug("entry", "Leaving named equivalence check %s, %s, %s", toReturn ? "true" : "false", one, two);
+		//PrintDebug("entry", "Leaving named equivalence check %s, %s, %s", toReturn ? "true" : "false", one, two);
 		return toReturn;
 
 	} else if (other-> sGetT() == s_AType) {
-		PrintDebug("entry", "leaving named equivalence check");
+		//PrintDebug("entry", "leaving named equivalence check");
 		return false;
 	}
 
-	PrintDebug("entry", "leaving named equivalence check");
+	//PrintDebug("entry", "leaving named equivalence check");
 	return false;
 };
 
 bool ArrayType::IsEquivalentTo(Type * other) {
-	PrintDebug("entry", "Entering array equivalence check");
+	//PrintDebug("entry", "Entering array equivalence check");
 
 	if(other == NULL) return false;
 
 	if (other-> sGetT() == s_DType) {
-		PrintDebug("entry", "Leaving array equivalence check false");
+		//PrintDebug("entry", "Leaving array equivalence check false");
 		return false;
 
 	} else if(other-> sGetT() == s_NType) { 
-		PrintDebug("entry", "Leaving array equivalence check false");
+		//PrintDebug("entry", "Leaving array equivalence check false");
 		return false;
 
 	} else if (other-> sGetT() == s_AType) {
-		PrintDebug("entry", "one");
+		//PrintDebug("entry", "one");
 
 		bool toReturn =(elemType->IsEquivalentTo(((ArrayType *)other)->elemType)); 
-		PrintDebug("entry", "Leaving array equivalence check %s", toReturn ? "true" : "false");
+		//PrintDebug("entry", "Leaving array equivalence check %s", toReturn ? "true" : "false");
 		return toReturn;
 	}
 
-	PrintDebug("entry", "Leaving array equivalence check false");
+	//PrintDebug("entry", "Leaving array equivalence check false");
 	return false;
 };
 

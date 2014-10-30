@@ -41,8 +41,8 @@ void Program::Check() {
 		SetDebugForKey(debugs.Nth(i), true);
 	}
 		
-	PrintDebug("entry", "Entering program\n");
-	PrintDebug("program", "adding\n");
+	//PrintDebug("entry", "Entering program\n");
+	//PrintDebug("program", "adding\n");
 	//Level * globals = new Level();
 	initLevel();
 	/*
@@ -52,7 +52,7 @@ void Program::Check() {
 		//globals->add(decls->Nth(i));
 		switch (cur->sGetT()) {
 			case s_CDecl: {
-					PrintDebug("program", "Found Class %s\n", ((ClassDecl *)cur)->getId()->getName());
+					//PrintDebug("program", "Found Class %s\n", ((ClassDecl *)cur)->getId()->getName());
 					c->Enter(cur->getId()->getName(), ((ClassDecl *)cur));
 				      }; break;
 		}
@@ -62,7 +62,7 @@ void Program::Check() {
 	decls->addList(lvl);
 
 	printLevel();
-	PrintDebug("program", "done adding\n");
+	//PrintDebug("program", "done adding\n");
 
 	/*
 	for(int i = 0; i < decls->NumElements(); ++i) {
@@ -72,12 +72,12 @@ void Program::Check() {
 	//globals->checkList(decls);
 	decls->checkList();
 
-	PrintDebug("entry", "leaving program\n");
+	//PrintDebug("entry", "leaving program\n");
 	
 }
 
 void StmtBlock::Check() {
-	PrintDebug("entry", "entering sblock\n");
+	//PrintDebug("entry", "entering sblock\n");
 	initLevel(NULL, true);
 	//lvl = new Level();
 	/*
@@ -88,27 +88,27 @@ void StmtBlock::Check() {
 	decls->addList(lvl);
 	decls->checkList();
 	stmts->checkList();
-	PrintDebug("entry", "leaving sblock\n");
+	//PrintDebug("entry", "leaving sblock\n");
 };
 
 void ConditionalStmt::Check() {
-	PrintDebug("entry", "entering conditional");
+	//PrintDebug("entry", "entering conditional");
 	initLevel(NULL, true);
 
 	body->Check();
-	PrintDebug("entry", "leaving conditional");
+	//PrintDebug("entry", "leaving conditional");
 };
 
 void IfStmt::Check() {
-	PrintDebug("entry", "entering if");
+	//PrintDebug("entry", "entering if");
 	initLevel(NULL, true);
-	PrintDebug("if", "checking body");
+	//PrintDebug("if", "checking body");
 	body->Check();
-	PrintDebug("if", "checking else");
+	//PrintDebug("if", "checking else");
 	if (elseBody != NULL) {
 		elseBody->Check();
 	}
-	PrintDebug("entry", "leaving if");
+	//PrintDebug("entry", "leaving if");
 };
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {
