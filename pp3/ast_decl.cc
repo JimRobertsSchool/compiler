@@ -30,7 +30,9 @@ void ClassDecl::Check() {
 			ClassDecl * ext = (ClassDecl *)d;
 			for(int i = 0; ext->members!=NULL && i < ext->members->NumElements(); ++i) {
 				Decl* d2 = ext->members->Nth(i);
-				if (d2->sGetT() != s_FDecl) lvl->add(d2);
+				if (d2->sGetT() != s_FDecl) {
+					lvl->add(d2);
+				}
 			}
 		}
 	}
@@ -56,7 +58,9 @@ void ClassDecl::Check() {
 		implements = new List<NamedType *>();
 	}
 	//PrintDebug("cdecl", "classmade = %d, implements is %ld\n", listMade, implements);
-	if(extends!=NULL && implements != NULL) implements->Append(extends);
+	if(extends!=NULL && implements != NULL) {
+		implements->Append(extends);
+	}
 
 	//PrintDebug("cdecl", "Checking inherited methods %s\n", id->getName());
 	
@@ -71,10 +75,14 @@ void ClassDecl::Check() {
 			//PrintDebug("cdecl", "in interface");
 			InterfaceDecl * imp = (InterfaceDecl *) d;
 			List<Decl *> * mem = imp->getMembers();
-			if (mem == NULL) continue;
+			if (mem == NULL){
+			       	continue;
+			}
 			for(int j = 0; j < mem->NumElements(); ++j) {
 				//PrintDebug("cdecl", "looping");
-				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
+				if(mem->Nth(j)->sGetT() != s_FDecl) {
+					continue;
+				}
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
 				//PrintDebug("cdecl", "found functioni1 %s", toDo->getId()->getName());
@@ -91,9 +99,13 @@ void ClassDecl::Check() {
 			ClassDecl * ext = (ClassDecl *)d;
 			//PrintDebug("cdecl", "found extended class %s", ext->id->getName());
 			List<Decl *> * mem = ext->members;
-			if (mem == NULL) continue;
+			if (mem == NULL){
+			       	continue;
+			}
 			for(int j = 0; j < mem->NumElements(); ++j) {
-				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
+				if(mem->Nth(j)->sGetT() != s_FDecl){
+				       	continue;
+				}
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
 				//PrintDebug("cdecl", "found function ext %s", toDo->getId()->getName());
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
@@ -110,7 +122,9 @@ void ClassDecl::Check() {
 			}
 		}
 	}
-	if(extends!=NULL && implements != NULL) implements->RemoveAt(implements->NumElements()-1);
+	if(extends!=NULL && implements != NULL) {
+		implements->RemoveAt(implements->NumElements()-1);
+	}
 	if(listMade) {
 		delete implements;
 		implements = NULL;
@@ -153,7 +167,9 @@ void FnDecl::Check() {
 
 bool FnDecl::samePrototype(FnDecl * parent) {
 	//PrintDebug("entry", "Entering proto");
-	if(parent != NULL && parent->formals != NULL && formals != NULL && parent->formals->NumElements() != formals->NumElements()) return false;
+	if(parent != NULL && parent->formals != NULL && formals != NULL && parent->formals->NumElements() != formals->NumElements()) {
+		return false;
+	}
 	//PrintDebug("proto", "here");
 	for(int i = 0; i < formals->NumElements(); ++i) {
 		VarDecl *p, *c;
@@ -186,7 +202,9 @@ ClassDecl::ClassDecl(Identifier *n, NamedType *ex, List<NamedType*> *imp, List<D
     // extends can be NULL, impl & mem may be empty lists but cannot be NULL
     Assert(n != NULL && imp != NULL && m != NULL);     
     extends = ex;
-    if (extends) extends->SetParent(this);
+    if (extends){
+	    extends->SetParent(this);
+    }
     (implements=imp)->SetParentAll(this);
     (members=m)->SetParentAll(this);
 }

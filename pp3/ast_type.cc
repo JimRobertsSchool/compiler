@@ -106,7 +106,9 @@ void ArrayType::Check() {
 bool NamedType::IsEquivalentTo(Type * other) {
 	//PrintDebug("entry", "Entering named equivalence check");
 
-	if(other == NULL) return false;
+	if(other == NULL) {
+		return false;
+	}
 
 	if (other-> sGetT() == s_DType) {
 		//PrintDebug("entry", "leaving named equivalence check");
@@ -134,7 +136,9 @@ bool NamedType::IsEquivalentTo(Type * other) {
 bool ArrayType::IsEquivalentTo(Type * other) {
 	//PrintDebug("entry", "Entering array equivalence check");
 
-	if(other == NULL) return false;
+	if(other == NULL){
+	       	return false;
+	}
 
 	if (other-> sGetT() == s_DType) {
 		//PrintDebug("entry", "Leaving array equivalence check false");
