@@ -56,6 +56,8 @@ class ClassDecl : public Decl
     ClassDecl(Identifier *name, NamedType *extends, 
               List<NamedType*> *implements, List<Decl*> *members);
     int sGetT() { return s_CDecl; }
+    List<NamedType *> * getInterface() {return implements;};
+    NamedType * getExtends() {return extends;};
     void Check();
 };
 
@@ -67,6 +69,7 @@ class InterfaceDecl : public Decl
   public:
     InterfaceDecl(Identifier *name, List<Decl*> *members);
     int sGetT() { return s_IDecl; }
+    List<Decl *> * getMembers() {return members;};
     void Check();
 };
 

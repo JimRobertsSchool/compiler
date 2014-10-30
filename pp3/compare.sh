@@ -4,18 +4,24 @@ make -s clean
 make -s
 
 mkdir tocompare
-cp samples/*.decaf tocompare/
+cp samples/*.out tocompare/
 
 cd tocompare
 ln -s ../dcc ./dcc
 
 cd ../tocompare
 
+for each in *.out; 
+do
+	filename=$(basename "$each")
+	extension="${filename##*.}"
+	filename="${filename%.*}"
+	cp ../samples/"$filename".decaf ./
+done
+
 for each in *.decaf; 
 do
-	cd ../solution
-	./dcc < ../tocompare/$each &> ../tocompare/"$each".out
-	cd ../tocompare
+	mv 
 done
 
 ERRORS=0
@@ -23,6 +29,8 @@ ERRORS=0
 for each in *.decaf;
 do
 	./dcc < $each &> ./"$each".mine
+	sort $each > $each
+	sort "$each".mine > "$each".mine
 	file1="$each.mine"
 	file2="$each.out"
 	output=$(diff -q -w "$file1" "$file2")

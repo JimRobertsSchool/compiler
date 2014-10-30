@@ -34,11 +34,23 @@ bool Level::add(Decl * toAdd) {
 	}
 	PrintDebug("level", "Done loop\n");
 	*/
-	if (old != NULL && old->sGetT() != s_FDecl) {
-		ReportError::DeclConflict(toAdd, old);
-		PrintDebug("level", "in the if (T=%d)\n", old->sGetT());
-		return false;
-	}
+	if (old != NULL) {
+		/*
+		   if (old != NULL && old->sGetT() != s_FDecl) {
+		   ReportError::DeclConflict(toAdd, old);
+		   PrintDebug("level", "in the if (T=%d)\n", old->sGetT());
+		   return false;
+		   } else */if (old->sGetT() == s_FDecl && old->sGetT() == toAdd->sGetT()) {
+			   FnDecl *o = (FnDecl *)old;
+			   FnDecl *c = (FnDecl *)toAdd;
+			   if(o->samePrototype(c)) {
+				   ReportError::DeclConflict(toAdd, old);
+				   return true;
+			   }
+		   }
+		   ReportError::DeclConflict(toAdd, old);
+		   return false;
+	};
 	scope->Enter(toAdd->getId()->getName(), toAdd);
 	PrintDebug("level", "normal return\n");
 	return true;
@@ -52,7 +64,7 @@ void Level::link(Level * top) {
 void Level::print() {
 	Iterator<Decl*> it = scope->GetIterator();
 	Decl * temp;
-	while(temp = it.GetNextValue()) {
+	while((temp = it.GetNextValue())) {
 		PrintDebug("level", "STUFF %s\n", temp->getId()->getName());
 	}
 	PrintDebug("level", "\n");

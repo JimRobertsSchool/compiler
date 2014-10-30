@@ -25,12 +25,19 @@ Identifier::Identifier(yyltype loc, const char *n) : Node(loc) {
 } 
 
 Level* Node::initLevel(Level * p, bool link) {
-	if(lvl==NULL)
+	if(lvl==NULL) {
 		lvl = new Level();
-	if (link)
+	//	PrintDebug("entry", "one");
+	}
+	if (link) {
 		lvl->link(p);
-	if (link && p==NULL) 
+	//	PrintDebug("entry", "two");
+	}
+	if (link && p==NULL) {
 		lvl->link(GetParent()->lvl);
+	//	PrintDebug("entry", "three");
+	}
+	//PrintDebug("entry", "returning");
 	return lvl;
 };
 

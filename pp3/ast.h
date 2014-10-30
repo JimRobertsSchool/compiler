@@ -43,6 +43,7 @@ enum {
 	s_VDecl, s_FDecl, s_CDecl, s_IDecl,
 	s_Var,
 	s_TInt, s_TDouble, s_TBool, s_TString, s_TIdent, s_TArr,
+	s_NType, s_DType, s_AType,
 	s_DEFAULT
 };
 

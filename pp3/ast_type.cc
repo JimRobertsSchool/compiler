@@ -31,7 +31,30 @@ void NamedType::Check() {
 	Decl* inTree = lookup(id, true);
 	if (inTree == NULL) {
 		PrintDebug("ntype", "Not found: %s\n", id->getName());
-		ReportError::IdentifierNotDeclared(id, LookingForType);
+		reasonT r = LookingForType;
+		int s = parent->sGetT();
+		if(s == s_CDecl) {
+			ClassDecl * p = (ClassDecl *)parent;
+			if (p->getExtends() != NULL && strcmp(p->getExtends()->getId()->getName(), id->getName())) {
+				PrintDebug("ntype", "found: %s, %s\n", id->getName(), p->getExtends()->getId()->getName());
+				ReportError::IdentifierNotDeclared(id, LookingForInterface);
+			} else {
+				ReportError::IdentifierNotDeclared(id, LookingForClass);
+			}
+			/*
+			   List<NamedType *> *t = ((ClassDecl *)parent)->getInterface();
+			   for(int i = 0; i < t->NumElements(); ++i) {
+			   if (!strcmp(t->Nth(i)->getId()->getName(), id->getName())) {
+			   PrintDebug("ntype", "found: %s\n", id->getName());
+			   ReportError::IdentifierNotDeclared(id, LookingForClass);
+			   return;
+			   }
+			   }
+			   */
+
+		}
+		//else if (s == s_CDecl) ReportError::IdentifierNotDeclared(id, LookingForClass);
+		else ReportError::IdentifierNotDeclared(id, LookingForType);
 	};
 	PrintDebug("entry", "Entering named type");
 
@@ -39,13 +62,44 @@ void NamedType::Check() {
 
 void ArrayType::Check() {
 	PrintDebug("entry", "Entering array");
-/*
 	initLevel(NULL, true);
-	Decl * inTree = lookup(elemType->getName(), true);
-	if(inTree == NULL) {
-		ReportError::IdentifierNotDeclared(id, LookingForType);
+	/*
+	PrintDebug("atype", "here zero %d", location->first_line);
+	yyltype l = yyltype();
+	l.first_line =   location->first_line;
+	l.last_line =    location->last_line;
+	l.first_column = location->first_column;
+	l.last_column =  location->last_column;
+	PrintDebug("atype", "here zero %s", elemType->getName());
+	Identifier * fake = new Identifier(l, elemType->getName());
+	PrintDebug("atype", "here one");
+	Decl * inTree = lookup(fake, true);
+	PrintDebug("atype", "here two");
+	if (inTree == NULL) {
+		PrintDebug("atype", "here three");
+		ReportError::IdentifierNotDeclared(fake, LookingForType);
 	}
 	*/
+	if(elemType->sGetT() == s_NType) {
+		NamedType * t = ((NamedType *)elemType);
+		Decl * inTree = lookup(t->getId(), true);
+		if (inTree == NULL) {
+			PrintDebug("ntype", "Not found: %s\n", t->getId()->getName());
+			reasonT r = LookingForType;
+			int s = parent->sGetT();
+			if(s == s_CDecl) {
+				ClassDecl * p = (ClassDecl *)parent;
+				if (p->getExtends() != NULL && strcmp(p->getExtends()->getId()->getName(), t->getId()->getName())) {
+					ReportError::IdentifierNotDeclared(t->getId(), LookingForInterface);
+				} else {
+					ReportError::IdentifierNotDeclared(t->getId(), LookingForClass);
+				}
+			}
+				   else ReportError::IdentifierNotDeclared(t->getId(), LookingForType);
+		};
+	} else if(elemType->sGetT() == s_AType) {
+		((ArrayType *)elemType)->Check();
+	}
 	PrintDebug("entry", "leaving array");
 };
 
