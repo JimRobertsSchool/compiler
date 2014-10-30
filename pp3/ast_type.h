@@ -47,6 +47,7 @@ class NamedType : public Type
     void PrintToStream(std::ostream& out) { out << id; }
     void Check();
     Identifier * getId() {return id;};
+    bool IsEquivalentTo(Type *other);
     int sGetT() {return s_NType;};
 };
 
@@ -60,6 +61,7 @@ class ArrayType : public Type
     
     void PrintToStream(std::ostream& out) { out << elemType << "[]"; }
     void Check();
+    bool IsEquivalentTo(Type *other);
     int sGetT() {return s_AType;};
 };
 

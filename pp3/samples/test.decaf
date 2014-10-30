@@ -1,1 +1,15 @@
-AB[][] a;
+/*
+class Sleeper
+{
+    void Sleep() {}
+}
+*/
+class GradStudent /*extends Sleeper*/ implements Student
+{
+    void Study(Student[] group) {}
+}
+
+interface Student {
+   //void Sleep();
+   void Study(Student[] group);
+}

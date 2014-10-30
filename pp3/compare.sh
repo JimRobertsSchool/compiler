@@ -19,28 +19,28 @@ do
 	cp ../samples/"$filename".decaf ./
 done
 
-for each in *.decaf; 
-do
-	mv 
-done
-
 ERRORS=0
 
-for each in *.decaf;
+for each in *.out;
 do
-	./dcc < $each &> ./"$each".mine
-	sort $each > $each
-	sort "$each".mine > "$each".mine
-	file1="$each.mine"
-	file2="$each.out"
+	filename=$(basename "$each")
+	extension="${filename##*.}"
+	filename="${filename%.*}"
+	fin="$filename".decaf
+	file1="$each"
+	file2="$filename".mine
+	./dcc < $fin &> "$file2"
+	sort "$file2" -o "$file2"
+	sort "$file1" -o  "$file1"
 	output=$(diff -q -w "$file1" "$file2")
 	d=`diff -w "$file1" "$file2"`
+	echo "$fin"
 
 	if [ -n "$output" ]; then
 		echo "$file1"
 		echo "$d"
 		read
-		$ERRORS=1
+		ERRORS=1
 	fi
 done
 

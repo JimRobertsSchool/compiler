@@ -103,6 +103,58 @@ void ArrayType::Check() {
 	PrintDebug("entry", "leaving array");
 };
 
+bool NamedType::IsEquivalentTo(Type * other) {
+	PrintDebug("entry", "Entering named equivalence check");
+
+	if(other == NULL) return false;
+
+	if (other-> sGetT() == s_DType) {
+		PrintDebug("entry", "leaving named equivalence check");
+		return false;
+
+	} else if(other-> sGetT() == s_NType) { 
+		PrintDebug("entry", "leaving named equivalence check");
+		const char * one = id->getName();
+		PrintDebug("entry", "two %s", one);
+		const char * two = ((NamedType *)other)->id->getName();
+
+		bool toReturn  = !(strcmp(one, two));
+		PrintDebug("entry", "Leaving named equivalence check %s, %s, %s", toReturn ? "true" : "false", one, two);
+		return toReturn;
+
+	} else if (other-> sGetT() == s_AType) {
+		PrintDebug("entry", "leaving named equivalence check");
+		return false;
+	}
+
+	PrintDebug("entry", "leaving named equivalence check");
+	return false;
+};
+
+bool ArrayType::IsEquivalentTo(Type * other) {
+	PrintDebug("entry", "Entering array equivalence check");
+
+	if(other == NULL) return false;
+
+	if (other-> sGetT() == s_DType) {
+		PrintDebug("entry", "Leaving array equivalence check false");
+		return false;
+
+	} else if(other-> sGetT() == s_NType) { 
+		PrintDebug("entry", "Leaving array equivalence check false");
+		return false;
+
+	} else if (other-> sGetT() == s_AType) {
+		PrintDebug("entry", "one");
+
+		bool toReturn =(elemType->IsEquivalentTo(((ArrayType *)other)->elemType)); 
+		PrintDebug("entry", "Leaving array equivalence check %s", toReturn ? "true" : "false");
+		return toReturn;
+	}
+
+	PrintDebug("entry", "Leaving array equivalence check false");
+	return false;
+};
 
 Type::Type(const char *n) {
     Assert(n);

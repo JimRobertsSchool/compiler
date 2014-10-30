@@ -58,6 +58,7 @@ void ClassDecl::Check() {
 	PrintDebug("cdecl", "classmade = %d, implements is %ld\n", listMade, implements);
 	if(extends!=NULL && implements != NULL) implements->Append(extends);
 
+	PrintDebug("cdecl", "Checking inherited methods %s\n", id->getName());
 	
 	for(int i = 0; implements != NULL && i < implements->NumElements(); ++i) {
 
@@ -67,18 +68,24 @@ void ClassDecl::Check() {
 			continue;
 		}
 		if(d->sGetT() == s_IDecl) {
-			//interface not found
 			PrintDebug("cdecl", "in interface");
 			InterfaceDecl * imp = (InterfaceDecl *) d;
 			List<Decl *> * mem = imp->getMembers();
 			if (mem == NULL) continue;
 			for(int j = 0; j < mem->NumElements(); ++j) {
+				PrintDebug("cdecl", "looping");
 				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
-				if (toComp != NULL && !(toDo->samePrototype(toComp))) {
+				PrintDebug("cdecl", "found functioni1 %s", toDo->getId()->getName());
+				PrintDebug("cdecl", "checking if");
+				if (toComp != NULL) {
+					bool equiv = toDo->samePrototype(toComp);
+					PrintDebug("cdecl", "herehere, %s", equiv ? "true" : "false");
+					if (!equiv) {
 						ReportError::OverrideMismatch(toComp);
-						}
+					}
+				}
 			}
 		} else if (d->sGetT() == s_CDecl) {
 			ClassDecl * ext = (ClassDecl *)d;
@@ -88,12 +95,13 @@ void ClassDecl::Check() {
 			for(int j = 0; j < mem->NumElements(); ++j) {
 				if(mem->Nth(j)->sGetT() != s_FDecl) continue;
 				FnDecl * toDo = (FnDecl *) mem->Nth(j);
-				PrintDebug("cdecl", "found function %s", toDo->getId()->getName());
+				PrintDebug("cdecl", "found function ext %s", toDo->getId()->getName());
 				FnDecl * toComp = (FnDecl *)lookup(mem->Nth(j)->getId(), false);
 				if(toComp!=NULL) 
-				PrintDebug("cdecl", "found function in current class %s", toComp->getId()->getName());
+					PrintDebug("cdecl", "found function in current class %s", toComp->getId()->getName());
 				else PrintDebug("cdecl", "%s not founds", toDo->getId()->getName());
 				if (toComp != NULL && !(toDo->samePrototype(toComp))) {
+					PrintDebug("cdecl", "herehere2");
 					ReportError::OverrideMismatch(toComp);
 				}
 				PrintDebug("cdecl", "end of iteration");
@@ -142,15 +150,19 @@ void FnDecl::Check() {
 };
 
 bool FnDecl::samePrototype(FnDecl * parent) {
+	PrintDebug("entry", "Entering proto");
 	if(parent != NULL && parent->formals != NULL && formals != NULL && parent->formals->NumElements() != formals->NumElements()) return false;
+	PrintDebug("proto", "here");
 	for(int i = 0; i < formals->NumElements(); ++i) {
 		VarDecl *p, *c;
 		p = parent->formals->Nth(i);
 		c = formals->Nth(i);
-		if(c->getType() != p->getType()) {
+		if(!(c->getType()->IsEquivalentTo(p->getType()))) {
+			PrintDebug("entry", "leaving proto");
 			return false;
 		}
 	}
+	PrintDebug("entry", "leaving proto");
 	return true;
 };
 

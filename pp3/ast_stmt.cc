@@ -24,6 +24,7 @@ void Program::Check() {
 	List<char *> debugs = List<char *>();
 	if(true) {
 		//debugs.Append("entry");
+		//debugs.Append("proto");
 		//debugs.Append("atype");
 		//debugs.Append("program");
 		//debugs.Append("find");
