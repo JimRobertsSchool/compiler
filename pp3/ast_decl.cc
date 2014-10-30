@@ -140,7 +140,7 @@ void FnDecl::Check() {
 	formals->checkList();
 
 	//PrintDebug("fdecl", "initializing body");
-	if(body == NULL) //PrintDebug("fdecl", "body is null");
+	//if(body == NULL) //PrintDebug("fdecl", "body is null");
 	if (body != NULL) {
 		body->initLevel(lvl, true);
 		//body->getLvl()->link(lvl);
