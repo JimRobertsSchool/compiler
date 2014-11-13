@@ -1,10 +1,16 @@
 interface Colorable {
    Color GetColor();
+   void SetColor(Color c);
 }
 
 
+class Shape implements Colorable {
 
-class Color {}
+  Color GetColor() { return myColor; }
+  void SetColor(Color c) { myColor = c;}
+
+  Color myColor;
+}
 
 void main() {
   Colorable s;
