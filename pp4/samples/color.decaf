@@ -1,0 +1,14 @@
+interface Colorable {
+   Color GetColor();
+}
+
+
+
+class Color {}
+
+void main() {
+  Colorable s;
+  Color green;
+
+  s.SetColor(green);
+}

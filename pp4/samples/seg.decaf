@@ -1,0 +1,8 @@
+class Vegetable {
+
+
+    void Eat(Vegetable veg)
+    {
+       return ;
+    }
+}

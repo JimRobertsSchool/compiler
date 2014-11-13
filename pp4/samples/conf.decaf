@@ -1,0 +1,19 @@
+class A {}
+class B extends A {}
+interface IA {}
+class C implements IA {}
+class D extends B implements IA {}
+
+void main() {
+	A a;
+	B b;
+	C c;
+	D d;
+
+	IA ia;
+
+	a = d;
+	ia = d;
+	ia = c;
+	ia = a;
+}

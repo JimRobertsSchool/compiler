@@ -1,0 +1,10 @@
+class a{}
+interface b{}
+
+class c extends a {}
+
+void main() {
+	a x;
+
+	x = New(a);
+}
