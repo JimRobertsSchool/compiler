@@ -1,0 +1,6 @@
+
+
+         ^
+*** Declaration of 'b' here conflicts with declaration on line 4
+  double b;
+*** Error line 6.

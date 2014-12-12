@@ -1,0 +1,18 @@
+
+
+
+
+
+
+             ^^^^^^^
+                      ^^^^^^^
+                                         ^^^^
+class Trouble extends Missing implements Gone
+class Trouble extends Missing implements Gone
+*** Error line 1.
+*** Error line 3.
+*** Error line 3.
+*** No declaration found for class 'Missing'
+*** No declaration found for interface 'Gone'
+*** No declaration found for type 'Unknown'
+void Mystery(Unknown a) {}
