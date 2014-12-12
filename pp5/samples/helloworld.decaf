@@ -1,0 +1,21 @@
+void main() {
+	//Print("Hello, world");
+	//Print(99);
+	//Print(false);
+	//Print(!true);
+
+	int[] x;
+	int y;
+	x = NewArray(3, int);
+	//y = x[2];
+	x[2] = 9;
+	//y = x[2];
+	Print(x[2]);
+
+}
+
+/*
+void m() {
+	Print("CHECK ME");
+}
+*/
