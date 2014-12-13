@@ -43,6 +43,7 @@ class NamedType : public Type
     NamedType(Identifier *i);
     
     void PrintToStream(std::ostream& out) { out << id; }
+    char * getName() { return id->getName(); };
 };
 
 class ArrayType : public Type 

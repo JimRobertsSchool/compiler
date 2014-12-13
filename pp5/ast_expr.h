@@ -39,6 +39,7 @@ class EmptyExpr : public Expr
 {
   public:
 	  void help() { printf("12\n"); };
+	  Location * cgen();
 };
 
 class IntConstant : public Expr 
@@ -89,6 +90,7 @@ class NullConstant: public Expr
   public: 
     NullConstant(yyltype loc) : Expr(loc) {}
     void help() { printf("17\n"); };
+    Location * cgen();
 };
 
 class Operator : public Node 
@@ -172,6 +174,7 @@ class This : public Expr
   public:
     This(yyltype loc) : Expr(loc) {}
     void help() { printf("26\n"); };
+    Location * cgen();
 };
 
 class ArrayAccess : public LValue 
@@ -200,6 +203,7 @@ class FieldAccess : public LValue
     FieldAccess(Expr *base, Identifier *field); //ok to pass NULL base
     Location * cgen();
     void help() { printf("28\n"); };
+    char * getName() { return field->getName();}
 };
 
 /* Like field access, call is used both for qualified base.field()
@@ -216,6 +220,7 @@ class Call : public Expr
   public:
     Call(yyltype loc, Expr *base, Identifier *field, List<Expr*> *args);
     void help() { printf("29\n"); };
+    Location * cgen();
 };
 
 class NewExpr : public Expr
@@ -226,6 +231,7 @@ class NewExpr : public Expr
   public:
     NewExpr(yyltype loc, NamedType *clsType);
     void help() { printf("30\n"); };
+    Location * cgen();
 };
 
 class NewArrayExpr : public Expr
@@ -244,6 +250,7 @@ class ReadIntegerExpr : public Expr
 {
   public:
     ReadIntegerExpr(yyltype loc) : Expr(loc) {}
+    Location * cgen();
 };
 
 class ReadLineExpr : public Expr
@@ -251,6 +258,8 @@ class ReadLineExpr : public Expr
   public:
     ReadLineExpr(yyltype loc) : Expr (loc) {}
     void help() { printf("32\n"); };
+    Location * cgen();
+
 };
 
     

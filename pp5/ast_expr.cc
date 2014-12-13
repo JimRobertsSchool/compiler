@@ -8,6 +8,11 @@
 #include <string.h>
 #include "tac.h"
 
+using namespace std;
+Location * EmptyExpr::cgen() {
+	return NULL;
+}
+
 Location * BoolConstant::cgen() {
 	Location * loc;
 	loc = cg -> GenLoadConstant(value ? 1 : 0);
@@ -32,6 +37,15 @@ Location * IntConstant::cgen() {
 	return loc;
 }
 
+Location * NullConstant::cgen() {
+	Location * toReturn;
+
+	toReturn = cg->GenLoadConstant(0);
+	types->Enter(toReturn->GetName(), Type::nullType, false);
+	
+	return toReturn;
+}
+
 Location * AssignExpr::cgen() {
 
 	PrintDebug("d", "here 1\n");
@@ -44,7 +58,18 @@ Location * AssignExpr::cgen() {
 		cg->GenStore(l, r);
 		return r;
 	}
-
+	if (true && inClass() && dynamic_cast<FieldAccess*>(left)) {
+		FieldAccess * fa = (FieldAccess*)left;
+		ClassDecl * cd = inClass();
+		Location * temp = cd->locs->Lookup(fa->getName());
+		if (temp) {
+			int off = temp -> GetOffset();
+			cg->GenStore(l, r, off);
+			return r;
+		} else {
+			
+		}
+	}
 	loc = l;
 
 	cg->GenAssign(loc, r);
@@ -53,6 +78,27 @@ Location * AssignExpr::cgen() {
 	return loc;
 
 
+}
+
+Location * EqualityExpr::cgen() {
+
+	Location * loc, *l, *r;
+
+	l = left->cgen();
+	r = right->cgen();
+
+	if (types->Lookup(l->GetName()) == Type::stringType) {
+	//if (strings->Lookup(l->GetName()) != NULL) {
+		// stirng comparison
+		loc = cg->GenBuiltInCall(StringEqual, l, r);
+	} else {
+		//normal
+		loc = cg->GenBinaryOp("==", l, r);
+	}
+
+	booleans->Enter(loc->GetName(), (void *)1, false);
+	types->Enter(loc->GetName(), Type::boolType, false);
+	return loc;
 }
 
 Location * LogicalExpr::cgen() {
@@ -133,25 +179,8 @@ Location * RelationalExpr::cgen() {
 
 }
 
-Location * EqualityExpr::cgen() {
-
-	Location * loc, *l, *r;
-
-	l = left->cgen();
-	r = right->cgen();
-
-	if (types->Lookup(l->GetName()) == Type::stringType) {
-	//if (strings->Lookup(l->GetName()) != NULL) {
-		// stirng comparison
-		loc = cg->GenBuiltInCall(StringEqual, l, r);
-	} else {
-		//normal
-		loc = cg->GenBinaryOp("==", l, r);
-	}
-
-	booleans->Enter(loc->GetName(), (void *)1, false);
-	types->Enter(loc->GetName(), Type::boolType, false);
-	return loc;
+Location * This::cgen() {
+	return cg->ThisPtr;
 }
 
 Location * ArrayAccess::cgen() {
@@ -222,12 +251,135 @@ Location * ArrayAccess::cgen() {
 Location * FieldAccess::cgen() {
 	Location * loc = NULL;
 
+
 	if (!base) {
+		// no base, check parameters
 		loc = locations->Lookup(field->getName());
-		PrintDebug("d", "Looking for %s, found at %d\n", field->getName(), loc->GetOffset());
+		if (!loc) {
+			goto out0;
+		}
+		loc = loc && loc->GetSegment() == gpRelative ? NULL : loc;
+		//PrintDebug("d", "Looking for %s, found at %d\n", field->getName(), loc->GetOffset());
+	} 
+	out0:
+
+	if (!loc && (inClass() || base)) {
+		// want to just check instance variables next
+		Location * b;
+		b = base ? base->cgen() : cg->ThisPtr;
+		ClassDecl * cd = inClass();
+		loc = cd->locs->Lookup(field->getName());
+		if (!loc) goto out1;
+		//Location * t = cg->GenLoad(b, 7);
+		//loc = cg->GenLoad(t, loc->GetOffset());
+		if (!write) {
+			loc = cg->GenLoad(b, loc->GetOffset());
+			types->Enter(loc->GetName(), cd->vdecs->Lookup(field->getName()));
+		} else {
+			loc = b;
+		}
+	}
+	out1:
+
+	if (!loc) {
+		loc = locations->Lookup(field->getName());
 	}
 
 	return loc;
+}
+
+Location * Call::cgen() {
+
+	List<Location *> ll = List<Location *>();
+	Location * b = NULL;
+	Location * m = NULL;
+	Type * rt = NULL;
+	int offset = 0;
+
+	if (!base) {
+		if (inClass()) {
+			ClassDecl * cd = inClass();
+			if (cd->locs->Lookup(field->getName())) {
+				// method
+				b = cg->ThisPtr;
+				m = cd->locs->Lookup(field->getName());	
+				rt = cd->fdecs->Lookup(field->getName())->getRet();
+			} else {
+				// function
+
+			}
+		} else {
+			// function
+			
+		}
+	} else {
+		b = base->cgen();
+		Type * t = types->Lookup(b->GetName());
+		if (dynamic_cast<NamedType *>(t)) {
+			NamedType * nt = dynamic_cast<NamedType *>(t);
+			ClassDecl * cd = hclass->Lookup(nt->getName());
+			m = cd->locs->Lookup(field->getName());
+			rt = cd->fdecs->Lookup(field->getName())->getRet();
+		} else {
+			// array length
+			Location * toRet = cg->GenLoad(b, -4);
+			types->Enter(toRet->GetName(), Type::intType);
+			return toRet;
+		}
+	}
+
+	for (int i = 0; i < actuals->NumElements(); ++i) {
+		Location * l = actuals->Nth(i)->cgen();
+		ll.InsertAt(l, 0);
+	}
+
+	if (m) {
+		ll.Append(b);	
+		Location * toUse = new Location(fpRelative, b->GetOffset(), b->GetName());
+		Location * one = cg->GenLoad(b, 0);
+		m = cg->GenLoad(one, m->GetOffset());
+	} else {
+		rt = hfns->Lookup(field->getName())->getRet();
+	}
+
+	for (int i = 0; i < ll.NumElements(); ++i) {
+		cg->GenPushParam(ll.Nth(i));
+	}
+
+	Location * toReturn = NULL;
+
+	if (m) {
+		toReturn = cg->GenACall(m, rt);
+	} else {
+		string s = "_";
+		s.append(field->getName());
+		toReturn = cg->GenLCall(s.c_str(), rt);
+	}
+
+	cg->GenPopParams(4*ll.NumElements());
+
+	if (toReturn) {
+		types->Enter(toReturn->GetName(), rt);
+	}
+
+	return toReturn;
+}
+
+Location * NewExpr::cgen() {
+	Location * toReturn;
+
+	char * name = cType->getName();
+	ClassDecl * cd = hclass->Lookup(name);
+
+	Location * s = cg->GenLoadConstant(cd->size + 4);
+	toReturn = cg->GenBuiltInCall(Alloc, s,NULL);
+
+	Location * vt = cg->GenLoadLabel(name);
+	cg->GenStore(toReturn, vt);
+
+	types->Enter(toReturn->GetName(), new NamedType(cd->getId()));
+
+	return toReturn;
 }
 
 Location * NewArrayExpr::cgen() {
@@ -272,6 +424,27 @@ Location * NewArrayExpr::cgen() {
 
 }
 
+Location * ReadIntegerExpr::cgen() {
+	
+	Location * toReturn;
+
+	toReturn = cg->GenBuiltInCall(ReadInteger, NULL, NULL);
+
+	types->Enter(toReturn->GetName(), Type::intType, false);
+
+	return toReturn;
+}
+
+Location * ReadLineExpr::cgen() {
+
+	Location * toReturn;
+
+	toReturn = cg->GenBuiltInCall(ReadLine, NULL, NULL);
+
+	types->Enter(toReturn->GetName(), Type::stringType, false);
+
+	return toReturn;
+}
 /* original below */
 
 

@@ -118,6 +118,7 @@ class ReturnStmt : public Stmt
   public:
     ReturnStmt(yyltype loc, Expr *expr);
     void help() { printf("9\n"); };
+    void Emit();
 };
 
 class PrintStmt : public Stmt

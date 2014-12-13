@@ -23,6 +23,8 @@ Hashtable<void *> *Node::strings;
 Hashtable<void *> *Node::booleans;
 Hashtable<void *> *Node::ints;
 Hashtable<Type *> *Node::types;
+Hashtable<ClassDecl*> *Node::hclass;
+Hashtable<FnDecl*> *Node::hfns;
 CodeGenerator *Node::cg;
 int Node::varSize;
 int *Node::tempNumb;
@@ -40,4 +42,20 @@ Node::Node() {
 Identifier::Identifier(yyltype loc, const char *n) : Node(loc) {
     name = strdup(n);
 } 
+
+ClassDecl * Node::inClass() {
+
+	Node * current = parent;
+
+	while (current != NULL) {
+
+		ClassDecl * cd = dynamic_cast<ClassDecl*>(current);
+		if (cd != NULL) return cd;
+		current = current->GetParent();
+		
+	}
+
+	return NULL;
+}
+
 

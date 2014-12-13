@@ -1,3 +1,5 @@
+//int test;
+int a;
 void main() {
 	//Print("Hello, world");
 	//Print(99);
@@ -5,17 +7,45 @@ void main() {
 	//Print(!true);
 
 	int[] x;
-	int y;
-	x = NewArray(3, int);
+	x = NewArray(4, int);
+	Print(x.length());
+	//int y;
+	//x = NewArray(3, int);
 	//y = x[2];
-	x[2] = 9;
+	//x[2] = 9;
 	//y = x[2];
-	Print(x[2]);
+	//Print(x[2]);
 
+	//A x;
+	//a = 4;
+	//x = New(A);
+	//x.init(2);
+	//Print(two());
+	//x.x();
+	//test = 4;
+	//x.x(99);
+	//Print(a);
+
+	//A x;
+	//x = null;
 }
 
 /*
-void m() {
-	Print("CHECK ME");
+void m(int a) {
+	Print("CHECK ME, ", a);
+}
+*/
+
+int two() {
+	return 2;
+}
+
+/*
+class A {
+	//int a;
+	int test;
+
+	void init(int x) { a = x; }
+	//void x() {Print(test+3);}
 }
 */

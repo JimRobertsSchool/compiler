@@ -67,6 +67,11 @@ template<class Element> class List {
     void RemoveAt(int index)
 	{ Assert(index >= 0 && index < NumElements());
 	  elems.erase(elems.begin() + index); }
+
+    void ReplaceAt(const Element &elem, int index) {
+	InsertAt(elem, index);
+	RemoveAt(index+1);
+    }
           
        // These are some specific methods useful for lists of ast nodes
        // They will only work on lists of elements that respond to the

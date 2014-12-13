@@ -14,12 +14,14 @@
 
 #include "ast.h"
 #include "list.h"
+#include "ast_type.h"
 
 class Type;
 class NamedType;
 class Identifier;
 class Stmt;
 class ClassDecl;
+class FnDecl;
 
 typedef enum {UNKNOWN=0, varDecl, functionDecl, classDecl, interfaceDecl} declType;
 
@@ -34,7 +36,7 @@ class Decl : public Node
     virtual declType getDeclType() { return UNKNOWN; }; 
     Identifier * getId() { return id; };
     char * getName() { return id->getName(); };
-    ClassDecl * inClass();
+    //ClassDecl * inClass();
 };
 
 class VarDecl : public Decl 
@@ -43,6 +45,7 @@ class VarDecl : public Decl
     Type *type;
     
   public:
+    Location * loc;
     VarDecl(Identifier *name, Type *type);
     declType getDeclType() { return varDecl; };
     Type * getType() { return type; };
@@ -55,9 +58,6 @@ class ClassDecl : public Decl
     List<Decl*> *members;
     NamedType *extends;
     List<NamedType*> *implements;
-    Hashtable<Location *> * locs;
-    List<const char *> * methodNames;
-    List<const char *> * methodParent;
 
   public:
     ClassDecl(Identifier *name, NamedType *extends, 
@@ -65,7 +65,17 @@ class ClassDecl : public Decl
     declType getDeclType() { return classDecl; };
     void Emit();
     void makeMembers();
-    void setMembers(List<const char *> * names, List<const char *> parents, Hashtable<Location *> l);
+    void setMembers(ClassDecl * p);
+    Hashtable<Location *> * locs;
+    List<char *> * methodNames;
+    List<char *> * methodParent;
+    List<const char *> * table;
+    List<FnDecl *> * fns;
+    List<VarDecl*> * vdl;
+    Hashtable<FnDecl *> * fdecs;
+    Hashtable<Type *> * vdecs;
+    int size;
+    char * getExtends() { return extends ? extends->getName() : NULL; };
 };
 
 class InterfaceDecl : public Decl 
@@ -86,10 +96,12 @@ class FnDecl : public Decl
     Stmt *body;
     
   public:
+    Location * loc;
     FnDecl(Identifier *name, Type *returnType, List<VarDecl*> *formals);
     void SetFunctionBody(Stmt *b);
     declType getDeclType() { return functionDecl; };
     void Emit();
+    Type * getRet() { return returnType; }
     char * genName();
 };
 

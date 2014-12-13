@@ -41,6 +41,8 @@ void Program::Emit() {
 	ints = new Hashtable<void *>();
 	booleans = new Hashtable<void *>();
 	types = new Hashtable<Type*>();
+	hclass = new Hashtable<ClassDecl*>();
+	hfns = new Hashtable<FnDecl*>();
 	cg = new CodeGenerator();
 	tempNumb = CodeGenerator::tempNum;
 	
@@ -49,18 +51,23 @@ void Program::Emit() {
 	List<FnDecl*> globalFunctions = List<FnDecl*>();
 	List<ClassDecl*> classes = List<ClassDecl*>();
 
+	Hashtable<ClassDecl *> toDo = Hashtable<ClassDecl *>();
 	
 	for (int i = 0; i < decls->NumElements(); ++i) {
 		Decl * temp = decls->Nth(i);
 		int t = temp->getDeclType();
 
 		if (t == classDecl) {
-			classes.Append((ClassDecl*)temp);
+			ClassDecl * cd = (ClassDecl *)temp;
+			classes.Append(cd);
+			toDo.Enter(cd->getName(), cd);
+			hclass->Enter(cd->getName(), cd);
 		} else if (t == varDecl) {
 			// global var decl
 			globals.Append((VarDecl*)temp);
 		} else if (t == functionDecl) {
 			FnDecl * fd = (FnDecl*)temp;	
+			hfns->Enter(fd->getName(), fd);
 			globalFunctions.Append(fd);
 			if (!strcmp(fd->getName(), "main")) {
 				main = fd;
@@ -73,6 +80,30 @@ void Program::Emit() {
 	if (main == NULL) {
 		ReportError::NoMainFound();
 		return;
+	}
+
+
+	List<ClassDecl *> ldone = List<ClassDecl *>();
+	Hashtable<ClassDecl *> hdone = Hashtable<ClassDecl *>();
+
+	while (toDo.NumEntries() > 0) {
+		ClassDecl * cur = NULL;
+		Iterator<ClassDecl*> iter = toDo.GetIterator();
+		while ((cur = iter.GetNextValue()) != NULL) {
+			if (cur->getExtends() != NULL) {
+				ClassDecl * par = hdone.Lookup(cur->getExtends());
+				if (!par) continue;
+				cur->setMembers(par);
+			} 
+			cur -> makeMembers();
+			ldone.Append(cur);
+			hdone.Enter(cur->getName(), cur);
+			toDo.Remove(cur->getName(), cur);
+			goto b1;
+		}
+
+		b1: continue;
+
 	}
 
 	for (int i = 0; i < globals.NumElements(); ++i) {
@@ -91,6 +122,14 @@ void Program::Emit() {
 
 	}
 
+	for (int i = 0; i < classes.NumElements(); ++i) {
+		classes.Nth(i)->Emit();
+	}
+
+	for (int i = 0; i < classes.NumElements(); ++i) {
+		cg->GenVTable(classes.Nth(i)->getName(), classes.Nth(i)->table);
+	}
+
 	cg -> DoFinalCodeGen();
 
 }
@@ -102,7 +141,7 @@ void StmtBlock::Emit() {
 		VarDecl * vd = decls -> Nth(i);
 		Location * loc = new Location(fpRelative, -1 * varSize * i + CodeGenerator::OffsetToFirstLocal, vd->getName());
 		locals.Append(loc);
-		PrintDebug("d", "inserting %s at %s%d\n", vd->getName(), loc->segChar(), loc->GetOffset());
+		//PrintDebug("d", "inserting %s at %s%d\n", vd->getName(), loc->segChar(), loc->GetOffset());
 		locations->Enter(vd->getName(), loc, false);
 		types->Enter(vd->getName(), vd->getType(), false);
 	}
@@ -210,6 +249,12 @@ void BreakStmt::Emit() {
 		cur = cur->GetParent();
 	}
 }
+
+void ReturnStmt::Emit() {
+	Location * loc;
+	loc = expr->cgen();
+	cg->GenReturn(loc);
+};
 
 void PrintStmt::Emit() {
 	for (int i = 0; i < args -> NumElements(); ++i) {

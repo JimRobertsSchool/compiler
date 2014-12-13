@@ -1,0 +1,18 @@
+class Player {
+  string name;
+}
+
+class Human extends Player{
+
+   void GetColumn() { 
+     	Print(name);
+    }
+}
+
+
+
+void main() 
+{
+}
+
+

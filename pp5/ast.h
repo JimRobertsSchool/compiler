@@ -36,6 +36,9 @@
 #include "tac.h"
 #include "codegen.h"
 
+class ClassDecl;
+class FnDecl;
+
 class Type;
     //static Hashtable<Type *> * declaredTypes;
 class Node 
@@ -48,6 +51,8 @@ class Node
     static Hashtable<void *> * booleans;
     static Hashtable<void *> * ints;
     static Hashtable<Type *> * types;
+    static Hashtable<ClassDecl*> * hclass;
+    static Hashtable<FnDecl *> * hfns;
     static CodeGenerator * cg;
     CodeGenerator * old;
     static int varSize;
@@ -62,6 +67,7 @@ class Node
     Node *GetParent()        { return parent; }
     virtual void Emit() { };
     void swapType(Location * l, Location * r);
+    ClassDecl * inClass();
 };
    
 

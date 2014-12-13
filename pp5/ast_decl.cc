@@ -6,10 +6,16 @@
 #include "ast_type.h"
 #include "ast_stmt.h"
 
+using namespace std;
+
 void VarDecl::Emit() {
 };
 
 void ClassDecl::Emit() {
+	for (int i = 0; i < fns->NumElements(); ++i) {
+		FnDecl * fd = fns->Nth(i);
+		fd->Emit();
+	}
 };
 
 void FnDecl::Emit() {
@@ -31,7 +37,7 @@ void FnDecl::Emit() {
 	List<Location *> parameters = List<Location *>();
 	for (int i = 0; i < formals->NumElements(); ++i) {
 		VarDecl * vd = formals -> Nth(i);
-		Location * loc = new Location(fpRelative, varSize * i, vd->getName());
+		Location * loc = new Location(fpRelative, varSize * i + cg->OffsetToFirstParam + (4*(inClass()?1:0)), vd->getName());
 		parameters.Append(loc);
 		locations->Enter(vd->getName(), loc, false);
 		types->Enter(vd->getName(), vd->getType(), false);
@@ -54,32 +60,99 @@ void FnDecl::Emit() {
 void ClassDecl::makeMembers() {
 	List<FnDecl *> funs = List<FnDecl *>();
 	List<VarDecl *> vars = List<VarDecl *>();
-}
 
-void ClassDecl::setMembers(List<const char *> * names, List<const char *> parents, Hashtable<Location *> l) {
+	for (int i = 0; i < members->NumElements(); ++i) {
+		Decl * d = members->Nth(i);
 
-}
-
-ClassDecl * Decl::inClass() {
-
-	Node * current = parent;
-
-	while (current != NULL) {
-
-		ClassDecl * cd = dynamic_cast<ClassDecl*>(current);
-		if (cd != NULL) cd;
-		current = current->GetParent();
-		
+		if (d->getDeclType() == varDecl) {
+			vars.Append(dynamic_cast<VarDecl *>(d));
+			vdl->Append(dynamic_cast<VarDecl *>(d));
+		} else {
+			funs.Append(dynamic_cast<FnDecl *>(d));
+			fns->Append(dynamic_cast<FnDecl *>(d));
+			fdecs->Enter(d->getName(), dynamic_cast<FnDecl *>(d));
+		}
 	}
 
-	return NULL;
+	for (int i = 0; i < funs.NumElements(); ++i) {
+		FnDecl * f = funs.Nth(i);
+		Location * l = locs->Lookup(f->getName());
+		if (l) {
+			for (int j = 0; j < methodNames->NumElements(); ++j) {
+				if (!strcmp(methodNames->Nth(j), f->getName())) {
+					methodParent->ReplaceAt(getName(), j);
+					j += 100;
+				}
+			}
+		} else {
+			locs->Enter(f->getName(), new Location(gpRelative, 4*methodNames->NumElements(), f->getName()));
+			methodNames->Append(f->getName());
+			methodParent->Append(getName());
+		}
+	}
+
+	for (int i = 0; i < vdl->NumElements(); ++i) {
+		//vars.Append(vdl->Nth(i));
+	}
+	
+	for (int i = 0; i < vars.NumElements(); ++i) {
+		VarDecl * v = vars.Nth(i);
+		locs->Enter(v->getName(), new Location(fpRelative, size + 4 * (i+1), v->getName()));
+		vdecs->Enter(v->getName(), v->getType());
+	}
+
+	size = 4 * vars.NumElements();
+
+	for (int i = 0; i < methodNames->NumElements(); ++ i) {
+		string s = "_";
+		s.append(methodParent->Nth(i));
+		s.append(".");
+		s.append(methodNames->Nth(i));
+		table->Append(strdup(s.c_str()));
+	}
+
+}
+
+void ClassDecl::setMembers(ClassDecl * p) {
+List<char *> * names = p->methodNames; List<char *> * parents = p->methodParent; Hashtable<Location *> * l = p->locs; int s = p->size;
+
+
+	//size = s;
+
+	for (int i = 0; i < names->NumElements(); ++i) {
+		methodNames->Append(names->Nth(i));
+		methodParent->Append(parents->Nth(i));
+	}
+
+	for (int i = 0; i < p->vdl->NumElements(); ++i) {
+		VarDecl * vd = p->vdl->Nth(i);
+		vdl->Append(p->vdl->Nth(i));
+		vdecs->Enter(vd->getName(), vd->getType());
+	}
+
+	for (int i = 0; i < p->fns->NumElements(); ++i) {
+		FnDecl * fd = p->fns->Nth(i);
+		//fns->Append(p->fns->Nth(i));
+		fdecs->Enter(fd->getName(), fd);
+	}
+
+	Iterator<Location*> iter = l->GetIterator();
+	Location *decl;
+	while ((decl = iter.GetNextValue()) != NULL) {
+		locs->Enter(decl->GetName(), decl);
+	}
+
 }
 
 char * FnDecl::genName() {
 	ClassDecl * m = this->inClass();
 
 	char temp[100];
-	sprintf(temp, "%s%s%s%s", m ? "_" : "", m ? m->getName():"", m || strcmp("main", getName()) ? "_":"", strdup(getName()));
+	if (m) {
+		sprintf(temp, "%s%s%s%s", "_", m->getName(), ".", strdup(getName()));
+	} else {
+		sprintf(temp, "%s%s%s%s", m ? "_" : "", m ? m->getName():"", m || strcmp("main", getName()) ? "_":"", strdup(getName()));
+	}
 	return strdup(temp);
 }
         
@@ -105,8 +178,13 @@ ClassDecl::ClassDecl(Identifier *n, NamedType *ex, List<NamedType*> *imp, List<D
     (implements=imp)->SetParentAll(this);
     (members=m)->SetParentAll(this);
     locs = new Hashtable<Location *>();
-    methodNames = new List<const char *>();
-    methodParent = new List<const char *>();
+    fdecs = new Hashtable<FnDecl *>();
+    vdecs = new Hashtable<Type*>();
+    methodNames = new List<char *>();
+    methodParent = new List<char *>();
+    table = new List<const char *>();
+    fns = new List<FnDecl *>();
+    vdl = new List<VarDecl *>();
 }
 
 
