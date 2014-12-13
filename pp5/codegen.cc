@@ -29,7 +29,7 @@ Location * CodeGenerator::arrayIndex(Location * addr, Location * index) {
 	l1 = NewLabel();
 
 	GenIfZ(check, l1);
-	error = GenLoadConstant("Decaf runtime error: Array subscript out of bound...");
+	error = GenLoadConstant("Decaf runtime error: Array subscript out of bounds");
 	GenBuiltInCall(PrintString, error, NULL);
 
 	GenBuiltInCall(Halt, NULL, NULL);

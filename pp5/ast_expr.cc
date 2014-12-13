@@ -296,6 +296,11 @@ Location * Call::cgen() {
 	Type * rt = NULL;
 	int offset = 0;
 
+	for (int i = 0; i < actuals->NumElements(); ++i) {
+		Location * l = actuals->Nth(i)->cgen();
+		ll.InsertAt(l, 0);
+	}
+
 	if (!base) {
 		if (inClass()) {
 			ClassDecl * cd = inClass();
@@ -328,11 +333,6 @@ Location * Call::cgen() {
 		}
 	}
 
-	for (int i = 0; i < actuals->NumElements(); ++i) {
-		Location * l = actuals->Nth(i)->cgen();
-		ll.InsertAt(l, 0);
-	}
-
 	if (m) {
 		ll.Append(b);	
 		Location * toUse = new Location(fpRelative, b->GetOffset(), b->GetName());
@@ -349,11 +349,11 @@ Location * Call::cgen() {
 	Location * toReturn = NULL;
 
 	if (m) {
-		toReturn = cg->GenACall(m, rt);
+		toReturn = cg->GenACall(m, rt && rt != Type::voidType);
 	} else {
 		string s = "_";
 		s.append(field->getName());
-		toReturn = cg->GenLCall(s.c_str(), rt);
+		toReturn = cg->GenLCall(s.c_str(), rt && rt != Type::voidType);
 	}
 
 	cg->GenPopParams(4*ll.NumElements());

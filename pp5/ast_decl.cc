@@ -100,8 +100,8 @@ void ClassDecl::makeMembers() {
 		locs->Enter(v->getName(), new Location(fpRelative, size + 4 * (i+1), v->getName()));
 		vdecs->Enter(v->getName(), v->getType());
 	}
+	size += 4 * vars.NumElements();
 
-	size = 4 * vars.NumElements();
 
 	for (int i = 0; i < methodNames->NumElements(); ++ i) {
 		string s = "_";
@@ -135,6 +135,8 @@ List<char *> * names = p->methodNames; List<char *> * parents = p->methodParent;
 		//fns->Append(p->fns->Nth(i));
 		fdecs->Enter(fd->getName(), fd);
 	}
+
+	size = p->size;
 
 	Iterator<Location*> iter = l->GetIterator();
 	Location *decl;

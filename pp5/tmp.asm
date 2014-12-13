@@ -2,92 +2,28 @@
 	  .text
 	  .align 2
 	  .globl main
-  main:
-	# BeginFunc 48
+	# VTable for class Player
+	  .data
+	  .align 2
+	  Player:		# label for class Player vtable
+	  .text
+  _Human.GetColumn:
+	# BeginFunc 4
 	  subu $sp, $sp, 8	# decrement sp to make space to save ra, fp
 	  sw $fp, 8($sp)	# save fp
 	  sw $ra, 4($sp)	# save ra
 	  addiu $fp, $sp, 8	# set up new fp
-	  subu $sp, $sp, 48	# decrement sp to make space for locals/temps
-	# _tmp0 = 4
-	  li $t2, 4		# load constant value 4 into $t2
-	  sw $t2, -12($fp)	# spill _tmp0 from $t2 to $fp-12
-	# _tmp1 = 0
-	  li $t2, 0		# load constant value 0 into $t2
-	  sw $t2, -16($fp)	# spill _tmp1 from $t2 to $fp-16
-	# _tmp2 = _tmp0 < _tmp1
-	  lw $t0, -12($fp)	# fill _tmp0 to $t0 from $fp-12
-	  lw $t1, -16($fp)	# fill _tmp1 to $t1 from $fp-16
-	  slt $t2, $t0, $t1	
-	  sw $t2, -20($fp)	# spill _tmp2 from $t2 to $fp-20
-	# IfZ _tmp2 Goto _L0
-	  lw $t0, -20($fp)	# fill _tmp2 to $t0 from $fp-20
-	  beqz $t0, _L0	# branch if _tmp2 is zero 
-	# _tmp3 = "Decaf runtime error: Array size is <= 0\n"
-	  .data			# create string constant marked with label
-	  _string1: .asciiz "Decaf runtime error: Array size is <= 0\n"
-	  .text
-	  la $t2, _string1	# load label
-	  sw $t2, -24($fp)	# spill _tmp3 from $t2 to $fp-24
-	# PushParam _tmp3
+	  subu $sp, $sp, 4	# decrement sp to make space for locals/temps
+	# _tmp0 = *(this + 4)
+	  lw $t0, 4($fp)	# fill this to $t0 from $fp+4
+	  lw $t2, 4($t0) 	# load with offset
+	  sw $t2, -8($fp)	# spill _tmp0 from $t2 to $fp-8
+	# PushParam _tmp0
 	  subu $sp, $sp, 4	# decrement sp to make space for param
-	  lw $t0, -24($fp)	# fill _tmp3 to $t0 from $fp-24
+	  lw $t0, -8($fp)	# fill _tmp0 to $t0 from $fp-8
 	  sw $t0, 4($sp)	# copy param value to stack
 	# LCall _PrintString
 	  jal _PrintString   	# jump to function
-	# PopParams 4
-	  add $sp, $sp, 4	# pop params off stack
-	# LCall _Halt
-	  jal _Halt          	# jump to function
-  _L0:
-	# _tmp4 = 1
-	  li $t2, 1		# load constant value 1 into $t2
-	  sw $t2, -28($fp)	# spill _tmp4 from $t2 to $fp-28
-	# _tmp5 = _tmp4 + _tmp0
-	  lw $t0, -28($fp)	# fill _tmp4 to $t0 from $fp-28
-	  lw $t1, -12($fp)	# fill _tmp0 to $t1 from $fp-12
-	  add $t2, $t0, $t1	
-	  sw $t2, -32($fp)	# spill _tmp5 from $t2 to $fp-32
-	# _tmp6 = 4
-	  li $t2, 4		# load constant value 4 into $t2
-	  sw $t2, -36($fp)	# spill _tmp6 from $t2 to $fp-36
-	# _tmp7 = _tmp5 * _tmp6
-	  lw $t0, -32($fp)	# fill _tmp5 to $t0 from $fp-32
-	  lw $t1, -36($fp)	# fill _tmp6 to $t1 from $fp-36
-	  mul $t2, $t0, $t1	
-	  sw $t2, -40($fp)	# spill _tmp7 from $t2 to $fp-40
-	# PushParam _tmp7
-	  subu $sp, $sp, 4	# decrement sp to make space for param
-	  lw $t0, -40($fp)	# fill _tmp7 to $t0 from $fp-40
-	  sw $t0, 4($sp)	# copy param value to stack
-	# _tmp8 = LCall _Alloc
-	  jal _Alloc         	# jump to function
-	  move $t2, $v0		# copy function return value from $v0
-	  sw $t2, -44($fp)	# spill _tmp8 from $t2 to $fp-44
-	# PopParams 4
-	  add $sp, $sp, 4	# pop params off stack
-	# *(_tmp8) = _tmp0
-	  lw $t0, -12($fp)	# fill _tmp0 to $t0 from $fp-12
-	  lw $t2, -44($fp)	# fill _tmp8 to $t2 from $fp-44
-	  sw $t0, 0($t2) 	# store with offset
-	# _tmp9 = _tmp8 + _tmp6
-	  lw $t0, -44($fp)	# fill _tmp8 to $t0 from $fp-44
-	  lw $t1, -36($fp)	# fill _tmp6 to $t1 from $fp-36
-	  add $t2, $t0, $t1	
-	  sw $t2, -48($fp)	# spill _tmp9 from $t2 to $fp-48
-	# x = _tmp9
-	  lw $t2, -48($fp)	# fill _tmp9 to $t2 from $fp-48
-	  sw $t2, -8($fp)	# spill x from $t2 to $fp-8
-	# _tmp10 = *(x + -4)
-	  lw $t0, -8($fp)	# fill x to $t0 from $fp-8
-	  lw $t2, -4($t0) 	# load with offset
-	  sw $t2, -52($fp)	# spill _tmp10 from $t2 to $fp-52
-	# PushParam _tmp10
-	  subu $sp, $sp, 4	# decrement sp to make space for param
-	  lw $t0, -52($fp)	# fill _tmp10 to $t0 from $fp-52
-	  sw $t0, 4($sp)	# copy param value to stack
-	# LCall _PrintInt
-	  jal _PrintInt      	# jump to function
 	# PopParams 4
 	  add $sp, $sp, 4	# pop params off stack
 	# EndFunc
@@ -96,23 +32,18 @@
 	  lw $ra, -4($fp)	# restore saved ra
 	  lw $fp, 0($fp)	# restore saved fp
 	  jr $ra		# return from function
-  _two:
-	# BeginFunc 4
+	# VTable for class Human
+	  .data
+	  .align 2
+	  Human:		# label for class Human vtable
+	  .word _Human.GetColumn
+	  .text
+  main:
+	# BeginFunc 0
 	  subu $sp, $sp, 8	# decrement sp to make space to save ra, fp
 	  sw $fp, 8($sp)	# save fp
 	  sw $ra, 4($sp)	# save ra
 	  addiu $fp, $sp, 8	# set up new fp
-	  subu $sp, $sp, 4	# decrement sp to make space for locals/temps
-	# _tmp11 = 2
-	  li $t2, 2		# load constant value 2 into $t2
-	  sw $t2, -8($fp)	# spill _tmp11 from $t2 to $fp-8
-	# Return _tmp11
-	  lw $t2, -8($fp)	# fill _tmp11 to $t2 from $fp-8
-	  move $v0, $t2		# assign return value into $v0
-	  move $sp, $fp		# pop callee frame off stack
-	  lw $ra, -4($fp)	# restore saved ra
-	  lw $fp, 0($fp)	# restore saved fp
-	  jr $ra		# return from function
 	# EndFunc
 	# (below handles reaching end of fn body with no explicit return)
 	  move $sp, $fp		# pop callee frame off stack

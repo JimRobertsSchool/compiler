@@ -1,18 +1,21 @@
-class Player {
-  string name;
-}
 
-class Human extends Player{
-
-   void GetColumn() { 
-     	Print(name);
-    }
+void main() {
 }
 
 
 
-void main() 
-{
+class QueueItem {
+  QueueItem GetNext() { }
+  QueueItem GetPrev() { }
+  //void SetNext(QueueItem n) {}
+  void SetPrev(QueueItem p) {}
+}  
+
+
+class Queue {
+  int DeQueue() {
+      QueueItem temp;
+      //temp.GetPrev().SetNext(temp.GetNext());
+      temp.GetNext().SetPrev(temp.GetPrev());
+  }
 }
-
-

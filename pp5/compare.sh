@@ -9,9 +9,6 @@ cp samples/*.out tocompare/
 cp run ./tocompare
 
 cd tocompare
-ln -s ../dcc ./dcc
-
-cd ../tocompare
 
 for each in *.out; 
 do
@@ -21,10 +18,13 @@ do
 	cp ../samples/"$filename".decaf ./
 done
 
+cd ../
+
 ERRORS=0
 
-for each in *.out;
+for each in ./tocompare/*.out;
 do
+	echo $each
 	filename=$(basename "$each")
 	extension="${filename##*.}"
 	filename="${filename%.*}"
@@ -50,9 +50,6 @@ if [ "$ERRORS" == "0" ];
 then
 	>&2 echo "No differences detected, try adding more test cases to ./samples"
 fi
-
-
-cd ../
 
 rm -rf tocompare
 make -s clean
